@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Overview - Investment Portfolio{% endblock %}
+
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-start align-items-center flex-wrap gap-3">
+            <h1 class="mb-0 d-flex align-items-center gap-2">
+                <span>Overview</span>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Funds</p>
+                <h2 class="fw-bold overview-value mb-1">{{ totals.total_investment|fmt_money }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Portfolio Value</p>
+                <h2 class="fw-bold mb-1">{{ totals.total_value|fmt_money }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Realized P&amp;L</p>
+                <h2 class="mb-1 fw-bold {% if totals.total_realized_pnl >= 0 %}profit{% else %}loss{% endif %}">
+                    {% if totals.total_realized_pnl >= 0 %}+{% endif %}{{ totals.total_realized_pnl|fmt_money }}
+                </h2>
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <span class="badge roi-badge {% if totals.realized_roi_percent >= 0 %}profit{% else %}loss{% endif %}">
+                        {{ totals.realized_roi_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Asset Allocation Cards -->
+<div class="row g-4 mb-4">
+    {% for item in summary %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100 category-card page-accent-surface">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">
+                        {% if item.category == 'Gold' %}
+                            <i class="bi bi-coin text-warning"></i>
+                        {% elif item.category == 'Stocks' %}
+                            <i class="bi bi-graph-up text-success"></i>
+                        {% elif item.category == 'ETFs' %}
+                            <i class="bi bi-bar-chart-line text-info"></i>
+                        {% elif item.category == 'Crypto' %}
+                            <i class="bi bi-currency-bitcoin text-danger"></i>
+                        {% endif %}
+                        {{ item.category }}
+                    </h5>
+                    <span class="allocation-corner">Allocation {{ "{:,.1f}".format(item.allocation) }}%</span>
+                </div>
+                
+                <div class="mb-3">
+                    <p class="text-muted small mb-1">Allocated Funds</p>
+                    <h5 class="mb-0">{{ item.amount|fmt_money }}</h5>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-sm-7">
+                        <p class="text-muted small mb-1">Invested</p>
+                        <p class="mb-0">{{ item.current_invested|fmt_money }}</p>
+                    </div>
+                    <div class="col-12 col-sm-5">
+                        <p class="text-muted small mb-1">Cash</p>
+                        <p class="mb-0">{{ item.cash|fmt_money }}</p>
+                    </div>
+                    <div class="col-12 col-sm-7">
+                        <p class="text-muted small mb-1">Realized P&amp;L</p>
+                        <p class="mb-0 {% if item.realized_pnl >= 0 %}profit{% else %}loss{% endif %}">
+                            {% if item.realized_pnl >= 0 %}+{% endif %}{{ item.realized_pnl|fmt_money }}
+                            <small class="ms-1 {% if item.realized_roi_percent >= 0 %}profit{% else %}loss{% endif %}">({{ item.realized_roi_display }})</small>
+                        </p>
+                    </div>
+                    <div class="col-12 col-sm-5">
+                        <p class="text-muted small mb-1">Total Value</p>
+                        <p class="mb-0">{{ item.total_value|fmt_money }}</p>
+                    </div>
+                </div>
+                
+
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                     <a href="{{ url_for('transactions.transaction_list', category=item.category) }}" 
+                         class="btn btn-sm btn-outline-primary w-100 overview-btn">
+                    View Transactions
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    {% if summary|length == 0 %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i>
+            No funds entries found. <a href="{{ url_for('funds.funds_list') }}">Add funds</a> to get started.
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
