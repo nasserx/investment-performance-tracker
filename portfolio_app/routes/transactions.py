@@ -1,36 +1,27 @@
 """Transactions blueprint - Transaction and asset management routes."""
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, g
+import logging
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from decimal import Decimal
-import re
 from sqlalchemy.exc import OperationalError
 from portfolio_app import db
-from portfolio_app.models import Fund, Transaction, Asset
-from portfolio_app.services import TransactionService, ValidationError
-from portfolio_app.repositories import TransactionRepository, AssetRepository, FundRepository
+from portfolio_app.services import get_services, ValidationError
 from portfolio_app.calculators import PortfolioCalculator
 from portfolio_app.forms import TransactionAddForm, TransactionEditForm, AssetAddForm, AssetDeleteForm
 from portfolio_app.utils import get_error_message, get_first_form_error, SuccessMessages, is_ajax_request, json_response
+from portfolio_app.utils.constants import safe_html_id
 from config import Config
+
+logger = logging.getLogger(__name__)
 
 # Create blueprint
 transactions_bp = Blueprint('transactions', __name__)
 
 
-def get_services():
-    """Get service instances (cached per request in g object)."""
-    if not hasattr(g, 'transactions_services'):
-        fund_repo = FundRepository(Fund, db)
-        transaction_repo = TransactionRepository(Transaction, db)
-        asset_repo = AssetRepository(Asset, db)
-        transaction_service = TransactionService(transaction_repo, asset_repo, fund_repo)
-        g.transactions_services = (transaction_service, fund_repo, transaction_repo, asset_repo)
-    return g.transactions_services
-
-
 def _get_transactions_page_context(category_filter=''):
     """Get context data for transactions page."""
-    _, fund_repo, transaction_repo, asset_repo = get_services()
+    svc = get_services()
+    fund_repo, transaction_repo, asset_repo = svc.fund_repo, svc.transaction_repo, svc.asset_repo
     category_filter = (category_filter or '').strip()
     funds = fund_repo.get_all()
     symbol_data = []
@@ -97,7 +88,7 @@ def _get_transactions_page_context(category_filter=''):
                 summary['roi_percent'] = None
                 summary['roi_percent_display'] = '—'
 
-            group_id = re.sub(r'[^A-Za-z0-9_\-]+', '_', f"{fund.id}-{sym_norm}")
+            group_id = safe_html_id(fund.id, sym_norm)
             asset = asset_by_symbol.get(sym_norm)
             symbol_data.append({
                 'fund': fund,
@@ -136,13 +127,9 @@ def transaction_list():
 def transaction_add():
     """Add new transaction."""
     try:
-        # Get services
-        transaction_service, fund_repo, _, _ = get_services()
+        svc = get_services()
+        funds = svc.fund_repo.get_all()
 
-        # Get funds for validation
-        funds = fund_repo.get_all()
-
-        # Validate form
         form = TransactionAddForm(request.form, funds)
         if not form.validate():
             if is_ajax_request():
@@ -157,11 +144,8 @@ def transaction_add():
                 open_modal='addTransactionModal',
             ), 400
 
-        # Get cleaned data
         data = form.get_cleaned_data()
-
-        # Add transaction using service
-        transaction = transaction_service.add_transaction(
+        svc.transaction_service.add_transaction(
             fund_id=data['fund_id'],
             transaction_type=data['transaction_type'],
             symbol=data['symbol'],
@@ -183,7 +167,8 @@ def transaction_add():
         flash(get_error_message(e), 'error')
         return redirect(url_for('transactions.transaction_list'))
 
-    except Exception as e:
+    except Exception:
+        logger.exception('Failed to add transaction')
         db.session.rollback()
         if is_ajax_request():
             return json_response(False, error='Operation failed')
@@ -195,18 +180,15 @@ def transaction_add():
 def transaction_edit(id):
     """Edit existing transaction."""
     try:
-        # Get services
-        transaction_service, _, transaction_repo, _ = get_services()
+        svc = get_services()
 
-        # Get current transaction
-        transaction = transaction_repo.get_by_id(id)
+        transaction = svc.transaction_repo.get_by_id(id)
         if not transaction:
             if is_ajax_request():
                 return json_response(False, error='Transaction not found')
             flash('Transaction not found', 'error')
             return redirect(url_for('transactions.transaction_list'))
 
-        # Validate form
         form = TransactionEditForm(request.form, id, transaction.transaction_type)
         if not form.validate():
             if is_ajax_request():
@@ -221,11 +203,8 @@ def transaction_edit(id):
                 open_modal='editTransactionModal',
             ), 400
 
-        # Get cleaned data
         data = form.get_cleaned_data()
-
-        # Update transaction using service
-        transaction_service.update_transaction(
+        svc.transaction_service.update_transaction(
             transaction_id=data['transaction_id'],
             price=data.get('price'),
             quantity=data.get('quantity'),
@@ -247,7 +226,8 @@ def transaction_edit(id):
         flash(get_error_message(e), 'error')
         return redirect(url_for('transactions.transaction_list'))
 
-    except Exception as e:
+    except Exception:
+        logger.exception('Failed to edit transaction %s', id)
         db.session.rollback()
         if is_ajax_request():
             return json_response(False, error='Operation failed')
@@ -259,8 +239,8 @@ def transaction_edit(id):
 def transaction_delete(id):
     """Delete transaction."""
     try:
-        transaction_service, _, _, _ = get_services()
-        transaction_service.delete_transaction(id)
+        svc = get_services()
+        svc.transaction_service.delete_transaction(id)
 
         if is_ajax_request():
             return json_response(True, message=SuccessMessages.TRANSACTION_DELETED)
@@ -271,7 +251,8 @@ def transaction_delete(id):
             return json_response(False, error=get_error_message(e))
         flash(get_error_message(e), 'error')
 
-    except Exception as e:
+    except Exception:
+        logger.exception('Failed to delete transaction %s', id)
         db.session.rollback()
         if is_ajax_request():
             return json_response(False, error='Operation failed')
@@ -284,13 +265,9 @@ def transaction_delete(id):
 def asset_add():
     """Add tracked asset."""
     try:
-        # Get services
-        transaction_service, fund_repo, _, _ = get_services()
+        svc = get_services()
+        funds = svc.fund_repo.get_all()
 
-        # Get funds for validation
-        funds = fund_repo.get_all()
-
-        # Validate form
         form = AssetAddForm(request.form, funds)
         if not form.validate():
             ctx = _get_transactions_page_context()
@@ -302,11 +279,8 @@ def asset_add():
                 open_modal='addAssetModal',
             ), 400
 
-        # Get cleaned data
         data = form.get_cleaned_data()
-
-        # Add asset using service
-        asset = transaction_service.add_asset(
+        svc.transaction_service.add_asset(
             fund_id=data['fund_id'],
             symbol=data['symbol']
         )
@@ -316,7 +290,8 @@ def asset_add():
     except ValueError as e:
         flash(get_error_message(e), 'error')
 
-    except Exception as e:
+    except Exception:
+        logger.exception('Failed to add asset')
         db.session.rollback()
         flash('Operation failed', 'error')
 
@@ -327,10 +302,8 @@ def asset_add():
 def asset_delete():
     """Delete tracked asset."""
     try:
-        # Get services
-        transaction_service, _, _, _ = get_services()
+        svc = get_services()
 
-        # Validate form
         form = AssetDeleteForm(request.form)
         if not form.validate():
             if is_ajax_request():
@@ -338,11 +311,8 @@ def asset_delete():
             flash('Invalid request', 'error')
             return redirect(url_for('transactions.transaction_list'))
 
-        # Get cleaned data
         data = form.get_cleaned_data()
-
-        # Delete asset using service
-        transaction_service.delete_asset(
+        svc.transaction_service.delete_asset(
             fund_id=data['fund_id'],
             symbol=data['symbol']
         )
@@ -356,7 +326,8 @@ def asset_delete():
             return json_response(False, error=get_error_message(e))
         flash(get_error_message(e), 'error')
 
-    except Exception as e:
+    except Exception:
+        logger.exception('Failed to delete asset')
         db.session.rollback()
         if is_ajax_request():
             return json_response(False, error='Operation failed')

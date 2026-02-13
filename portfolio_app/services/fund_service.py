@@ -6,6 +6,7 @@ from portfolio_app.models.fund import Fund
 from portfolio_app.models.fund_event import FundEvent
 from portfolio_app.repositories.fund_repository import FundRepository
 from portfolio_app.repositories.fund_event_repository import FundEventRepository
+from portfolio_app.utils.constants import EventType
 
 
 class FundService:
@@ -47,7 +48,7 @@ class FundService:
         # Create initial event
         event = FundEvent(
             fund_id=fund.id,
-            event_type='Initial',
+            event_type=EventType.INITIAL,
             amount_delta=amount,
             notes=notes
         )
@@ -78,7 +79,7 @@ class FundService:
 
         event = FundEvent(
             fund_id=fund_id,
-            event_type='Deposit',
+            event_type=EventType.DEPOSIT,
             amount_delta=amount_delta,
             notes=notes
         )
@@ -109,7 +110,7 @@ class FundService:
 
         event = FundEvent(
             fund_id=fund_id,
-            event_type='Withdrawal',
+            event_type=EventType.WITHDRAWAL,
             amount_delta=-amount_delta,
             notes=notes
         )
@@ -195,7 +196,7 @@ class FundService:
         if not event:
             raise ValueError('Event not found')
 
-        if event.event_type == 'Initial':
+        if event.event_type == EventType.INITIAL:
             raise ValueError('Cannot delete initial event')
 
         # Reverse the amount from fund

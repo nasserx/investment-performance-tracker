@@ -1,24 +1,15 @@
 """Dashboard blueprint - Portfolio summary and API endpoints."""
 
-from flask import Blueprint, render_template, jsonify, request, Response, g
+import logging
+from flask import Blueprint, render_template, jsonify, request, Response
 from decimal import Decimal
-from portfolio_app import db
-from portfolio_app.models import Fund
-from portfolio_app.services import PortfolioService
-from portfolio_app.repositories import FundRepository
+from portfolio_app.services import get_services
 from portfolio_app.calculators import PortfolioCalculator
+
+logger = logging.getLogger(__name__)
 
 # Create blueprint
 dashboard_bp = Blueprint('dashboard', __name__)
-
-
-def get_services():
-    """Get service instances (cached per request in g object)."""
-    if not hasattr(g, 'dashboard_services'):
-        fund_repo = FundRepository(Fund, db)
-        portfolio_service = PortfolioService(fund_repo)
-        g.dashboard_services = (portfolio_service, fund_repo)
-    return g.dashboard_services
 
 
 def _jsonify_decimals(value):
@@ -39,9 +30,9 @@ def index() -> str:
     Returns:
         Rendered dashboard template with portfolio summary
     """
-    portfolio_service, _ = get_services()
-    summary, total_value = portfolio_service.get_portfolio_summary()
-    totals = portfolio_service.get_portfolio_dashboard_totals()
+    svc = get_services()
+    summary, total_value = svc.portfolio_service.get_portfolio_summary()
+    totals = svc.portfolio_service.get_portfolio_dashboard_totals()
 
     return render_template(
         'index.html',
@@ -58,8 +49,8 @@ def api_portfolio_summary() -> Response:
     Returns:
         JSON response with portfolio summary and total value
     """
-    portfolio_service, _ = get_services()
-    summary, total_value = portfolio_service.get_portfolio_summary()
+    svc = get_services()
+    summary, total_value = svc.portfolio_service.get_portfolio_summary()
 
     return jsonify(_jsonify_decimals({
         'summary': summary,
@@ -94,8 +85,8 @@ def api_holdings() -> Response:
             return jsonify({'error': 'Invalid symbol'}), 400
 
         # Check fund exists
-        _, fund_repo = get_services()
-        fund = fund_repo.get_by_id(fund_id)
+        svc = get_services()
+        fund = svc.fund_repo.get_by_id(fund_id)
         if not fund:
             return jsonify({'error': 'Fund not found'}), 404
 

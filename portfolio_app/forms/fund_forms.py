@@ -3,6 +3,7 @@
 from decimal import Decimal
 from typing import List, Optional
 from portfolio_app.forms.base_form import BaseForm
+from portfolio_app.utils.constants import EventType
 
 
 class FundAddForm(BaseForm):
@@ -166,7 +167,7 @@ class FundEventDeleteForm(BaseForm):
             True if validation passes, False otherwise
         """
         # Prevent deleting Initial events
-        if self.current_event_type == 'Initial':
+        if self.current_event_type == EventType.INITIAL:
             self.errors['__all__'] = 'Cannot delete initial funding event.'
             return False
 

@@ -4,6 +4,13 @@ from decimal import Decimal
 from sqlalchemy import case
 from portfolio_app.models import Fund, Transaction
 
+ZERO = Decimal('0')
+
+
+def _safe_divide(numerator, denominator, default=ZERO):
+    """Divide numerator by denominator, returning default if denominator is zero."""
+    return numerator / denominator if denominator else default
+
 
 class PortfolioCalculator:
     """Utility class for portfolio calculations"""
@@ -29,7 +36,7 @@ class PortfolioCalculator:
             query = query.filter(Transaction.id != exclude_transaction_id)
         transactions = query.order_by(Transaction.date.asc()).all()
 
-        running_quantity = Decimal('0')
+        running_quantity = ZERO
         for t in transactions:
             qty = PortfolioCalculator._to_decimal(t.quantity)
             if t.transaction_type == 'Buy':
@@ -49,7 +56,7 @@ class PortfolioCalculator:
             query = query.filter(Transaction.id != exclude_transaction_id)
         transactions = query.order_by(Transaction.date.asc()).all()
 
-        running_quantity = Decimal('0')
+        running_quantity = ZERO
         for t in transactions:
             qty = PortfolioCalculator._to_decimal(t.quantity)
             if t.transaction_type == 'Buy':
@@ -63,7 +70,7 @@ class PortfolioCalculator:
     def get_total_portfolio_value():
         """Total portfolio value (invested + cash across all categories)."""
         funds = Fund.query.all()
-        total = Decimal('0')
+        total = ZERO
         for f in funds:
             cash = PortfolioCalculator.get_cash_balance_for_fund(f.id)
             tx_summary = PortfolioCalculator.get_category_transactions_summary(f.id)
@@ -80,7 +87,7 @@ class PortfolioCalculator:
         """
         fund = Fund.query.get(fund_id)
         if not fund:
-            return Decimal('0')
+            return ZERO
 
         cash = Decimal(str(fund.amount or 0))
         query = Transaction.query.filter_by(fund_id=fund_id)
@@ -112,7 +119,7 @@ class PortfolioCalculator:
 
         # First pass: compute per-category values
         categories = []
-        portfolio_value = Decimal('0')
+        portfolio_value = ZERO
         for fund in funds:
             fund_amount = Decimal(str(fund.amount or 0))
 
@@ -128,7 +135,7 @@ class PortfolioCalculator:
 
             total_value = fund_amount + realized_pnl
 
-            realized_roi_percent = Decimal('0')
+            realized_roi_percent = ZERO
             realized_roi_display = '—'
             if fund_amount > 0:
                 realized_roi_percent = (realized_pnl / fund_amount) * 100
@@ -149,7 +156,7 @@ class PortfolioCalculator:
         # Second pass: compute allocation based on portfolio value
         summary = []
         for cat in categories:
-            allocation = (cat['category_value'] / portfolio_value * 100) if portfolio_value > 0 else Decimal('0')
+            allocation = (cat['category_value'] / portfolio_value * 100) if portfolio_value > 0 else ZERO
 
             summary.append({
                 'category': cat['fund'].category,
@@ -175,7 +182,7 @@ class PortfolioCalculator:
             .distinct()
             .all()
         )
-        realized = Decimal('0')
+        realized = ZERO
         for (sym,) in symbols:
             sym_norm = PortfolioCalculator.normalize_symbol(sym)
             if not sym_norm:
@@ -194,9 +201,9 @@ class PortfolioCalculator:
             .all()
         )
 
-        realized_pnl = Decimal('0')
-        realized_cost_basis = Decimal('0')
-        realized_proceeds = Decimal('0')
+        realized_pnl = ZERO
+        realized_cost_basis = ZERO
+        realized_proceeds = ZERO
 
         for (sym,) in symbols:
             sym_norm = PortfolioCalculator.normalize_symbol(sym)
@@ -223,10 +230,10 @@ class PortfolioCalculator:
         """
         funds = Fund.query.all()
 
-        total_investment = Decimal('0')
-        total_cash = Decimal('0')
-        total_invested = Decimal('0')
-        total_realized_pnl = Decimal('0')
+        total_investment = ZERO
+        total_cash = ZERO
+        total_invested = ZERO
+        total_realized_pnl = ZERO
 
         for fund in funds:
             total_investment += Decimal(str(fund.amount))
@@ -242,7 +249,7 @@ class PortfolioCalculator:
 
         total_value = total_invested + total_cash
 
-        realized_roi_percent = Decimal('0')
+        realized_roi_percent = ZERO
         realized_roi_display = '—'
         if total_investment > 0:
             realized_roi_percent = (total_realized_pnl / total_investment) * 100
@@ -269,15 +276,15 @@ class PortfolioCalculator:
         )
 
         totals = {
-            'total_buy_cost': Decimal('0'),
-            'total_buy_fees': Decimal('0'),
-            'total_buy_quantity': Decimal('0'),
-            'total_sell_cost': Decimal('0'),
-            'total_sell_fees': Decimal('0'),
-            'total_sell_quantity': Decimal('0'),
-            'total_quantity_held': Decimal('0'),
-            'realized_pnl': Decimal('0'),
-            'current_invested': Decimal('0'),
+            'total_buy_cost': ZERO,
+            'total_buy_fees': ZERO,
+            'total_buy_quantity': ZERO,
+            'total_sell_cost': ZERO,
+            'total_sell_fees': ZERO,
+            'total_sell_quantity': ZERO,
+            'total_quantity_held': ZERO,
+            'realized_pnl': ZERO,
+            'current_invested': ZERO,
             'transaction_count': 0,
         }
 
@@ -298,10 +305,10 @@ class PortfolioCalculator:
             totals['transaction_count'] += int(summary['transaction_count'])
 
         # Average cost for category-level is not well-defined across multiple symbols.
-        avg_cost = Decimal('0')
+        avg_cost = ZERO
         if totals['total_quantity_held'] > 0:
             # Approximate: weighted by current held qty using per-symbol avg cost.
-            weighted_cost = Decimal('0')
+            weighted_cost = ZERO
             for (sym,) in symbols:
                 sym_norm = PortfolioCalculator.normalize_symbol(sym)
                 if not sym_norm:
@@ -340,19 +347,19 @@ class PortfolioCalculator:
     @staticmethod
     def get_symbol_transactions_summary_from_list(transactions):
         """Get aggregated summary from a list of transactions (ascending by date)."""
-        total_buy_cost = Decimal('0')
-        total_buy_fees = Decimal('0')
-        total_buy_quantity = Decimal('0')
+        total_buy_cost = ZERO
+        total_buy_fees = ZERO
+        total_buy_quantity = ZERO
 
-        total_sell_cost = Decimal('0')  # net proceeds (price*qty - fees)
-        total_sell_fees = Decimal('0')
-        total_sell_quantity = Decimal('0')
+        total_sell_cost = ZERO  # net proceeds (price*qty - fees)
+        total_sell_fees = ZERO
+        total_sell_quantity = ZERO
 
-        realized_pnl = Decimal('0')
-        realized_cost_basis = Decimal('0')
-        realized_proceeds = Decimal('0')
-        running_quantity = Decimal('0')
-        running_cost = Decimal('0')
+        realized_pnl = ZERO
+        realized_cost_basis = ZERO
+        realized_proceeds = ZERO
+        running_quantity = ZERO
+        running_cost = ZERO
 
         for t in transactions:
             price = PortfolioCalculator._to_decimal(t.price)
@@ -374,7 +381,7 @@ class PortfolioCalculator:
 
                 realized_proceeds += proceeds
 
-                avg_cost = (running_cost / running_quantity) if running_quantity > 0 else Decimal('0')
+                avg_cost = _safe_divide(running_cost, running_quantity)
                 realized_pnl += (price - avg_cost) * quantity - fees
                 realized_cost_basis += avg_cost * quantity
 
@@ -383,7 +390,7 @@ class PortfolioCalculator:
                 running_cost -= avg_cost * quantity
 
         total_quantity_held = running_quantity
-        avg_cost = (running_cost / running_quantity) if running_quantity > 0 else Decimal('0')
+        avg_cost = _safe_divide(running_cost, running_quantity)
 
         return {
             'total_buy_cost': total_buy_cost,
@@ -399,23 +406,6 @@ class PortfolioCalculator:
             'realized_cost_basis': realized_cost_basis,
             'realized_proceeds': realized_proceeds,
             'current_invested': running_cost,
-        }
-
-    @staticmethod
-    def get_total_portfolio_roi():
-        """Deprecated: kept for backward compatibility.
-
-        This app is manual-entry based (no live prices). ROI/unrealized doesn't
-        have a reliable meaning without market pricing, so the dashboard no
-        longer uses this.
-        """
-        totals = PortfolioCalculator.get_portfolio_dashboard_totals()
-        return {
-            'cost_basis': 0,
-            'current_value': totals['total_cash'],
-            'gain_loss': 0,
-            'roi_percent': 0,
-            'roi_display': '0%'
         }
 
     @staticmethod
@@ -451,8 +441,8 @@ class PortfolioCalculator:
             .all()
         )
 
-        running_quantity = Decimal('0')
-        running_cost = Decimal('0')
+        running_quantity = ZERO
+        running_cost = ZERO
 
         for transaction in transactions:
             # Ensure total_cost is consistent with transaction type (Buy vs Sell)

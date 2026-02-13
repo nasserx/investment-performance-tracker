@@ -7,6 +7,7 @@ from portfolio_app import create_app, db
 from portfolio_app.models import Fund, Transaction
 from portfolio_app.calculators import PortfolioCalculator
 from datetime import datetime
+from decimal import Decimal
 from config import Config
 from pathlib import Path
 
@@ -200,14 +201,14 @@ def setup_test_data():
         print(f"\nGold Average Cost:")
         print(f"  Expected: {expected_gold_avg:,.4f}")
         print(f"  Actual: {gold_summary['average_cost']:,.4f}")
-        print(f"  ✓ PASS" if abs(expected_gold_avg - gold_summary['average_cost']) < 0.01 else "  ✗ FAIL")
+        print(f"  ✓ PASS" if abs(Decimal(str(expected_gold_avg)) - gold_summary['average_cost']) < Decimal('0.01') else "  ✗ FAIL")
         
         # Check AAPL average cost
         expected_stocks_avg = (((50 * 100) + 25) + ((30 * 105) + 15)) / (50 + 30)
         print(f"\nStocks Average Cost:")
         print(f"  Expected: {expected_stocks_avg:,.4f}")
         print(f"  Actual: {stocks_summary['average_cost']:,.4f}")
-        print(f"  ✓ PASS" if abs(expected_stocks_avg - stocks_summary['average_cost']) < 0.01 else "  ✗ FAIL")
+        print(f"  ✓ PASS" if abs(Decimal(str(expected_stocks_avg)) - stocks_summary['average_cost']) < Decimal('0.01') else "  ✗ FAIL")
 
         # Check MSFT average cost doesn't mix with AAPL
         msft_summary = PortfolioCalculator.get_symbol_transactions_summary(stocks.id, 'MSFT')
@@ -215,7 +216,7 @@ def setup_test_data():
         print(f"\nMSFT Average Cost (same category, separate symbol):")
         print(f"  Expected: {expected_msft_avg:,.4f}")
         print(f"  Actual: {msft_summary['average_cost']:,.4f}")
-        print(f"  ✓ PASS" if abs(expected_msft_avg - msft_summary['average_cost']) < 0.01 else "  ✗ FAIL")
+        print(f"  ✓ PASS" if abs(Decimal(str(expected_msft_avg)) - msft_summary['average_cost']) < Decimal('0.01') else "  ✗ FAIL")
 
         # Check ETFs running average cost after Sell then Buy
         etfs_summary = PortfolioCalculator.get_symbol_transactions_summary(etfs.id, 'ETHA')
@@ -225,12 +226,12 @@ def setup_test_data():
         print(f"\nETFs Average Cost (Sell then Buy case):")
         print(f"  Expected: {expected_etfs_avg:,.4f}")
         print(f"  Actual: {etfs_summary['average_cost']:,.4f}")
-        print(f"  ✓ PASS" if abs(expected_etfs_avg - etfs_summary['average_cost']) < 0.01 else "  ✗ FAIL")
+        print(f"  ✓ PASS" if abs(Decimal(str(expected_etfs_avg)) - etfs_summary['average_cost']) < Decimal('0.01') else "  ✗ FAIL")
 
         print(f"\nETFs Realized P&L:")
         print(f"  Expected: {expected_etfs_realized:,.2f}")
         print(f"  Actual: {etfs_summary['realized_pnl']:,.2f}")
-        print(f"  ✓ PASS" if abs(expected_etfs_realized - etfs_summary['realized_pnl']) < 0.01 else "  ✗ FAIL")
+        print(f"  ✓ PASS" if abs(Decimal(str(expected_etfs_realized)) - etfs_summary['realized_pnl']) < Decimal('0.01') else "  ✗ FAIL")
         
         print("\n" + "=" * 60)
         print("TEST COMPLETE")
@@ -259,14 +260,14 @@ def test_routes():
     print("✓ Dashboard route works")
     
     # Test transactions route
-    response = client.get('/transactions')
-    print(f"GET /transactions - Status: {response.status_code}")
+    response = client.get('/transactions/')
+    print(f"GET /transactions/ - Status: {response.status_code}")
     assert response.status_code == 200, "Transactions route failed"
     print("✓ Transactions route works")
-    
+
     # Test funds route
-    response = client.get('/funds')
-    print(f"GET /funds - Status: {response.status_code}")
+    response = client.get('/funds/')
+    print(f"GET /funds/ - Status: {response.status_code}")
     assert response.status_code == 200, "Funds route failed"
     print("✓ Funds route works")
     

@@ -9,6 +9,7 @@ from portfolio_app.utils.messages import (
     get_first_form_error
 )
 from portfolio_app.utils.http import is_ajax_request, json_response
+from portfolio_app.utils.constants import EventType, safe_html_id
 
 __all__ = [
     'fmt_decimal',
@@ -20,4 +21,6 @@ __all__ = [
     'get_first_form_error',
     'is_ajax_request',
     'json_response',
+    'EventType',
+    'safe_html_id',
 ]
