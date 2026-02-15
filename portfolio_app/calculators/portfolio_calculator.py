@@ -1,7 +1,7 @@
 """Portfolio calculator for financial calculations."""
 
 from decimal import Decimal
-from sqlalchemy import case
+from sqlalchemy import case, func
 from portfolio_app.models import Fund, Transaction
 
 ZERO = Decimal('0')
@@ -339,7 +339,7 @@ class PortfolioCalculator:
         buy_first = case((Transaction.transaction_type == 'Buy', 0), else_=1)
         transactions = (
             Transaction.query.filter_by(fund_id=fund_id, symbol=symbol)
-            .order_by(Transaction.date.asc(), buy_first, Transaction.id.asc())
+            .order_by(func.date(Transaction.date).asc(), buy_first, Transaction.id.asc())
             .all()
         )
         return PortfolioCalculator.get_symbol_transactions_summary_from_list(transactions)
@@ -437,7 +437,7 @@ class PortfolioCalculator:
         buy_first = case((Transaction.transaction_type == 'Buy', 0), else_=1)
         transactions = (
             Transaction.query.filter_by(fund_id=fund_id, symbol=symbol)
-            .order_by(Transaction.date.asc(), buy_first, Transaction.id.asc())
+            .order_by(func.date(Transaction.date).asc(), buy_first, Transaction.id.asc())
             .all()
         )
 
