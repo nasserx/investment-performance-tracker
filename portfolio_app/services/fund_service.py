@@ -8,44 +8,34 @@ from portfolio_app.repositories.fund_repository import FundRepository
 from portfolio_app.repositories.fund_event_repository import FundEventRepository
 from portfolio_app.utils.constants import EventType
 
+ZERO = Decimal('0')
+
+
+def _to_decimal(value) -> Decimal:
+    """Convert any numeric value to Decimal safely."""
+    return Decimal(str(value))
+
 
 class FundService:
     """Service for fund-related business logic."""
 
     def __init__(self, fund_repo: FundRepository, event_repo: FundEventRepository):
-        """Initialize service with repositories.
-
-        Args:
-            fund_repo: Fund repository
-            event_repo: FundEvent repository
-        """
         self.fund_repo = fund_repo
         self.event_repo = event_repo
 
+    # ------------------------------------------------------------------
+    # Fund CRUD
+    # ------------------------------------------------------------------
+
     def create_fund(self, category: str, amount: Decimal, notes: str = 'Initial funding') -> Fund:
-        """Create new fund with initial event.
-
-        Args:
-            category: Fund category name
-            amount: Initial amount
-            notes: Optional notes for the initial event
-
-        Returns:
-            The created fund
-
-        Raises:
-            ValueError: If fund with this category already exists
-        """
-        # Validate
+        """Create new fund with initial deposit event."""
         if self.fund_repo.get_by_category(category):
             raise ValueError('Fund already exists')
 
-        # Create fund
         fund = Fund(category=category, amount=amount)
         self.fund_repo.add(fund)
-        self.fund_repo.flush()  # Get fund.id
+        self.fund_repo.flush()  # Obtain fund.id before creating event
 
-        # Create initial event
         event = FundEvent(
             fund_id=fund.id,
             event_type=EventType.INITIAL,
@@ -57,120 +47,51 @@ class FundService:
 
         return fund
 
-    def deposit_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None) -> Fund:
-        """Deposit funds to category.
-
-        Args:
-            fund_id: Fund ID
-            amount_delta: Amount to deposit
-            notes: Optional notes
-
-        Returns:
-            Updated fund
-
-        Raises:
-            ValueError: If fund not found
-        """
-        fund = self.fund_repo.get_by_id(fund_id)
-        if not fund:
-            raise ValueError('Fund not found')
-
-        fund.amount = Decimal(str(fund.amount)) + amount_delta
-
-        event = FundEvent(
-            fund_id=fund_id,
-            event_type=EventType.DEPOSIT,
-            amount_delta=amount_delta,
-            notes=notes
-        )
-        self.event_repo.add(event)
-        self.fund_repo.commit()
-
-        return fund
-
-    def withdraw_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None) -> Fund:
-        """Withdraw funds from category.
-
-        Args:
-            fund_id: Fund ID
-            amount_delta: Amount to withdraw (positive number)
-            notes: Optional notes
-
-        Returns:
-            Updated fund
-
-        Raises:
-            ValueError: If fund not found
-        """
-        fund = self.fund_repo.get_by_id(fund_id)
-        if not fund:
-            raise ValueError('Fund not found')
-
-        fund.amount = Decimal(str(fund.amount)) - amount_delta
-
-        event = FundEvent(
-            fund_id=fund_id,
-            event_type=EventType.WITHDRAWAL,
-            amount_delta=-amount_delta,
-            notes=notes
-        )
-        self.event_repo.add(event)
-        self.fund_repo.commit()
-
-        return fund
-
     def delete_fund(self, fund_id: int) -> str:
-        """Delete fund (cascade deletes events and transactions).
-
-        Args:
-            fund_id: Fund ID
-
-        Returns:
-            Category name of deleted fund
-
-        Raises:
-            ValueError: If fund not found
-        """
-        fund = self.fund_repo.get_by_id(fund_id)
-        if not fund:
-            raise ValueError('Fund not found')
-
+        """Delete fund and cascade-delete its events and transactions."""
+        fund = self._require_fund(fund_id)
         category = fund.category
         self.fund_repo.delete(fund)
         self.fund_repo.commit()
-
         return category
 
+    # ------------------------------------------------------------------
+    # Deposit / Withdraw
+    # ------------------------------------------------------------------
+
+    def deposit_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None) -> Fund:
+        """Deposit funds into a category."""
+        fund = self._require_fund(fund_id)
+        fund.amount = _to_decimal(fund.amount) + amount_delta
+        self._create_event(fund_id, EventType.DEPOSIT, amount_delta, notes)
+        self.fund_repo.commit()
+        return fund
+
+    def withdraw_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None) -> Fund:
+        """Withdraw funds from a category (amount_delta is positive)."""
+        fund = self._require_fund(fund_id)
+        fund.amount = _to_decimal(fund.amount) - amount_delta
+        # Store withdrawal as negative delta for accurate fund history
+        self._create_event(fund_id, EventType.WITHDRAWAL, -amount_delta, notes)
+        self.fund_repo.commit()
+        return fund
+
+    # ------------------------------------------------------------------
+    # Event operations
+    # ------------------------------------------------------------------
+
     def update_fund_event(self, event_id: int, amount_delta: Decimal, notes: Optional[str] = None, date: Optional[Any] = None) -> FundEvent:
-        """Update a fund event.
+        """Update a fund event and adjust the parent fund's balance."""
+        event = self._require_event(event_id)
 
-        Args:
-            event_id: Event ID
-            amount_delta: New amount delta
-            notes: New notes
-            date: New date
+        # Apply the difference between old and new delta to the fund balance
+        old_delta = _to_decimal(event.amount_delta)
+        delta_change = amount_delta - old_delta
 
-        Returns:
-            Updated event
-
-        Raises:
-            ValueError: If event not found
-        """
-        event = self.event_repo.get_by_id(event_id)
-        if not event:
-            raise ValueError('Event not found')
-
-        # Calculate the difference to apply to fund
-        old_delta = Decimal(str(event.amount_delta))
-        new_delta = amount_delta
-        delta_change = new_delta - old_delta
-
-        # Update fund amount
         fund = self.fund_repo.get_by_id(event.fund_id)
         if fund:
-            fund.amount = Decimal(str(fund.amount)) + delta_change
+            fund.amount = _to_decimal(fund.amount) + delta_change
 
-        # Update event
         event.amount_delta = amount_delta
         if notes is not None:
             event.notes = notes
@@ -181,31 +102,60 @@ class FundService:
         return event
 
     def delete_fund_event(self, event_id: int) -> int:
-        """Delete a fund event.
+        """Delete a fund event, reverse its effect, and clean up empty events.
 
-        Args:
-            event_id: Event ID
-
-        Returns:
-            Fund ID of the deleted event
-
-        Raises:
-            ValueError: If event not found or it's an initial event
+        After deletion, if only zero-delta events remain (no financial impact),
+        they are removed as well. The fund itself is kept with its current balance.
         """
+        event = self._require_event(event_id)
+        fund_id = event.fund_id
+
+        # Reverse the event's effect on the fund balance
+        fund = self.fund_repo.get_by_id(fund_id)
+        if fund:
+            fund.amount = _to_decimal(fund.amount) - _to_decimal(event.amount_delta)
+
+        self.event_repo.delete(event)
+        self.event_repo.flush()
+
+        # Auto-cleanup: remove leftover zero-delta events (no useful history)
+        self._cleanup_empty_events(fund_id)
+
+        self.fund_repo.commit()
+        return fund_id
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _require_fund(self, fund_id: int) -> Fund:
+        """Fetch fund or raise ValueError."""
+        fund = self.fund_repo.get_by_id(fund_id)
+        if not fund:
+            raise ValueError('Fund not found')
+        return fund
+
+    def _require_event(self, event_id: int) -> FundEvent:
+        """Fetch event or raise ValueError."""
         event = self.event_repo.get_by_id(event_id)
         if not event:
             raise ValueError('Event not found')
+        return event
 
-        if event.event_type == EventType.INITIAL:
-            raise ValueError('Cannot delete initial event')
+    def _create_event(self, fund_id: int, event_type: str, amount_delta: Decimal, notes: Optional[str]) -> FundEvent:
+        """Create and persist a new fund event."""
+        event = FundEvent(
+            fund_id=fund_id,
+            event_type=event_type,
+            amount_delta=amount_delta,
+            notes=notes
+        )
+        self.event_repo.add(event)
+        return event
 
-        # Reverse the amount from fund
-        fund = self.fund_repo.get_by_id(event.fund_id)
-        if fund:
-            fund.amount = Decimal(str(fund.amount)) - Decimal(str(event.amount_delta))
-
-        fund_id = event.fund_id
-        self.event_repo.delete(event)
-        self.fund_repo.commit()
-
-        return fund_id
+    def _cleanup_empty_events(self, fund_id: int) -> None:
+        """Remove all remaining events if they all have zero delta (no financial data)."""
+        remaining = self.event_repo.get_by_fund_id(fund_id)
+        if remaining and all(_to_decimal(e.amount_delta) == ZERO for e in remaining):
+            for e in remaining:
+                self.event_repo.delete(e)

@@ -33,13 +33,15 @@ def _get_funds_page_context():
     for fund in funds:
         events = svc.event_repo.get_by_fund_id(fund.id)
 
-        # One-time backfill for legacy databases
-        if not events:
+        # Legacy backfill: create an Initial event for old funds that have
+        # a balance but no event history.  Skipped when amount=0 (user may
+        # have intentionally deleted all events — show Deposit button instead).
+        if not events and fund.amount and Decimal(str(fund.amount)) != 0:
             try:
                 backfill = FundEvent(
                     fund_id=fund.id,
                     event_type=EventType.INITIAL,
-                    amount_delta=Decimal(str(fund.amount or 0)),
+                    amount_delta=Decimal(str(fund.amount)),
                     date=fund.created_at,
                     notes=None,
                 )

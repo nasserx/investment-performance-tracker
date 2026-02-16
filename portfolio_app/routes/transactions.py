@@ -73,14 +73,15 @@ def _get_transactions_page_context(category_filter=''):
             avg_cost_decimals = max(2, price_decimals)
             summary = PortfolioCalculator.get_symbol_transactions_summary_from_list(transactions)
 
+            # Per-symbol ROI: realized P&L vs cost basis of sold shares
             try:
                 realized_pnl = Decimal(str(summary.get('realized_pnl', 0) or 0))
-                realized_cost_basis = Decimal(str(summary.get('realized_cost_basis', 0) or 0))
+                cost_basis = Decimal(str(summary.get('realized_cost_basis', 0) or 0))
 
-                if realized_cost_basis > 0:
-                    roi_percent = (realized_pnl / realized_cost_basis) * Decimal('100')
-                    summary['roi_percent'] = float(roi_percent)
-                    summary['roi_percent_display'] = f"{roi_percent:+,.2f}%"
+                if cost_basis != 0:
+                    roi = (realized_pnl / abs(cost_basis)) * Decimal('100')
+                    summary['roi_percent'] = float(roi)
+                    summary['roi_percent_display'] = f"{roi:+,.2f}%"
                 else:
                     summary['roi_percent'] = None
                     summary['roi_percent_display'] = '—'

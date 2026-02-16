@@ -188,8 +188,13 @@
                         </table>
                     </div>
                     {% else %}
-                    <div class="p-3 text-muted text-center bg-light help-message">
-                        <small><i class="bi bi-info-circle"></i> No transactions for this symbol yet</small>
+                    <div class="p-3 text-center help-message page-accent-surface">
+                        <button type="button" class="btn btn-outline-primary btn-sm js-add-transaction-btn"
+                                data-fund-id="{{ item.fund.id }}"
+                                data-category="{{ item.fund.category|e }}"
+                                data-symbol="{{ item.symbol|e }}">
+                            <i class="bi bi-plus-lg"></i> Add Transaction
+                        </button>
                     </div>
                     {% endif %}
                 </div>

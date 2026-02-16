@@ -1,9 +1,7 @@
 """Forms for fund-related operations."""
 
-from decimal import Decimal
-from typing import List, Optional
+from typing import List
 from portfolio_app.forms.base_form import BaseForm
-from portfolio_app.utils.constants import EventType
 
 
 class FundAddForm(BaseForm):
@@ -105,17 +103,9 @@ class FundWithdrawForm(BaseForm):
 class FundEventEditForm(BaseForm):
     """Form for editing a fund event."""
 
-    def __init__(self, data: dict, event_id: int, current_event_type: str):
-        """Initialize form.
-
-        Args:
-            data: Form data
-            event_id: Event ID
-            current_event_type: Current event type (to prevent editing Initial events)
-        """
+    def __init__(self, data: dict, event_id: int, current_event_type: str = ''):
         super().__init__(data)
         self.event_id = event_id
-        self.current_event_type = current_event_type
 
     def validate(self) -> bool:
         """Validate event edit form.
@@ -146,30 +136,12 @@ class FundEventEditForm(BaseForm):
 
 
 class FundEventDeleteForm(BaseForm):
-    """Form for deleting a fund event."""
+    """Form for deleting a fund event (any type, including Initial)."""
 
-    def __init__(self, data: dict, event_id: int, current_event_type: str):
-        """Initialize form.
-
-        Args:
-            data: Form data
-            event_id: Event ID
-            current_event_type: Current event type
-        """
+    def __init__(self, data: dict, event_id: int, current_event_type: str = ''):
         super().__init__(data)
         self.event_id = event_id
-        self.current_event_type = current_event_type
 
     def validate(self) -> bool:
-        """Validate event delete form.
-
-        Returns:
-            True if validation passes, False otherwise
-        """
-        # Prevent deleting Initial events
-        if self.current_event_type == EventType.INITIAL:
-            self.errors['__all__'] = 'Cannot delete initial funding event.'
-            return False
-
         self.cleaned_data['event_id'] = self.event_id
-        return not self.has_errors()
+        return True
