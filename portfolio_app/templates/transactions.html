@@ -150,8 +150,8 @@
                                     <td><small class="text-uppercase">{{ transaction.symbol or '-' }}</small></td>
                                     <td class="text-end"><small>{{ transaction.price|fmt_money(item.price_decimals) }}</small></td>
                                     <td class="text-end"><small>{{ transaction.quantity|fmt_decimal }}</small></td>
-                                    <td class="text-end"><small class="text-danger">{{ transaction.fees|fmt_money }}</small></td>
-                                    <td class="text-end"><small class="text-primary">{{ transaction.total_cost|fmt_money }}</small></td>
+                                    <td class="text-end"><small class="text-danger">{{ transaction.fees|fmt_decimal }}</small></td>
+                                    <td class="text-end"><small class="text-primary">{{ transaction.total_cost|fmt_decimal }}</small></td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <button type="button" class="btn btn-outline-primary btn-sm js-edit-transaction-btn"
@@ -790,7 +790,7 @@ function editTransaction(id, fundId, type, symbol, price, quantity, fees, notes,
     if (symbolInput) symbolInput.value = (symbol || '').toUpperCase();
     if (priceInput) priceInput.value = trimTrailingZeros(price);
     if (quantityInput) quantityInput.value = trimTrailingZeros(quantity);
-    if (feesInput) feesInput.value = fees;
+    if (feesInput) feesInput.value = trimTrailingZeros(fees);
     if (notesInput) notesInput.value = notes;
     if (dateInput) dateInput.value = dateShort || '';
 
