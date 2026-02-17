@@ -105,7 +105,8 @@ def funds_add():
         fund = svc.fund_service.create_fund(
             category=data['category'],
             amount=data['amount'],
-            notes='Initial funding'
+            notes='Initial funding',
+            date=data.get('date')
         )
 
         if is_ajax_request():
@@ -188,7 +189,8 @@ def funds_deposit(id):
         svc.fund_service.deposit_funds(
             fund_id=data['fund_id'],
             amount_delta=data['amount_delta'],
-            notes=data.get('notes')
+            notes=data.get('notes'),
+            date=data.get('date')
         )
 
         if is_ajax_request():
@@ -240,7 +242,8 @@ def funds_withdraw(id):
         svc.fund_service.withdraw_funds(
             fund_id=data['fund_id'],
             amount_delta=data['amount_delta'],
-            notes=data.get('notes')
+            notes=data.get('notes'),
+            date=data.get('date')
         )
 
         if is_ajax_request():

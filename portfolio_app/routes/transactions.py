@@ -153,7 +153,8 @@ def transaction_add():
             price=data['price'],
             quantity=data['quantity'],
             fees=data['fees'],
-            notes=data['notes']
+            notes=data['notes'],
+            date=data.get('date')
         )
 
         if is_ajax_request():

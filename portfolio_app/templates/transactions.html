@@ -225,7 +225,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row g-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="asset_fund_id" class="form-label">Asset Category</label>
                                 {% set _asset_errs = (form_errors.get('asset_add', {}) if form_errors else {}) %}
@@ -243,11 +243,11 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="asset_symbol" class="form-label">Symbol</label>
-                                    <input type="text" class="form-control {% if _asset_errs.get('asset_symbol') %}is-invalid{% endif %}" id="asset_symbol" name="asset_symbol" maxlength="20"
-                                       placeholder="e.g., AAPL" oninput="this.value = this.value.toUpperCase();">
+                                <input type="text" class="form-control {% if _asset_errs.get('asset_symbol') %}is-invalid{% endif %}" id="asset_symbol" name="asset_symbol" maxlength="20"
+                                    placeholder="e.g., AAPL" oninput="this.value = this.value.toUpperCase();">
                                 {% if _asset_errs.get('asset_symbol') %}
                                 <div class="invalid-feedback">{{ _asset_errs.get('asset_symbol') }}</div>
                                 {% endif %}
@@ -280,7 +280,7 @@
                 <div class="modal-body">
                     {% set _tx_add_errs = (form_errors.get('transaction_add', {}) if form_errors else {}) %}
                     <div class="row g-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3" id="add_tx_category_group">
                                 <label for="fund_id" class="form-label">Asset Category</label>
                                 {% set _tx_add_vals = (form_values.get('transaction_add', {}) if form_values else {}) %}
@@ -296,7 +296,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3" id="add_tx_symbol_group">
                                 <label for="symbol" class="form-label">Symbol</label>
                                     <input type="text" class="form-control {% if _tx_add_errs.get('symbol') %}is-invalid{% endif %}" id="symbol" name="symbol" maxlength="20"
@@ -336,7 +336,7 @@
                     </div>
 
                     <div class="row g-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="price" class="form-label">Price (per unit)</label>
                                 <input type="text" inputmode="decimal" class="form-control {% if _tx_add_errs.get('price') %}is-invalid{% endif %}" id="price" name="price"
@@ -346,7 +346,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="quantity" class="form-label">Quantity</label>
                                 <div class="position-relative">
@@ -357,20 +357,33 @@
                                     </span>
                                 </div>
                                 {% if _tx_add_errs.get('quantity') %}
-                                <div class="invalid-feedback">{{ _tx_add_errs.get('quantity') }}</div>
+                                <div class="invalid-feedback d-block">{{ _tx_add_errs.get('quantity') }}</div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="fees" class="form-label">Fees (Optional)</label>
-                           <input type="text" inputmode="decimal" class="form-control {% if _tx_add_errs.get('fees') %}is-invalid{% endif %}" id="fees" name="fees"
-                               value="0" placeholder="0.00">
-                        {% if _tx_add_errs.get('fees') %}
-                        <div class="invalid-feedback">{{ _tx_add_errs.get('fees') }}</div>
-                        {% endif %}
-                        <div id="total_cost_preview" class="tx-preview"></div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="fees" class="form-label">Fees (Optional)</label>
+                                <input type="text" inputmode="decimal" class="form-control {% if _tx_add_errs.get('fees') %}is-invalid{% endif %}" id="fees" name="fees"
+                                    value="0" placeholder="0.00">
+                                {% if _tx_add_errs.get('fees') %}
+                                <div class="invalid-feedback">{{ _tx_add_errs.get('fees') }}</div>
+                                {% endif %}
+                                <div id="total_cost_preview" class="tx-preview"></div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="add_tx_date" class="form-label">Date</label>
+                                <input type="text" class="form-control {% if _tx_add_errs.get('date') %}is-invalid{% endif %}" id="add_tx_date" name="date" placeholder="YYYY-MM-DD">
+                                {% if _tx_add_errs.get('date') %}
+                                <div class="invalid-feedback d-block">{{ _tx_add_errs.get('date') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -400,7 +413,7 @@
                 <div class="modal-body">
                     {% set _tx_edit_errs = (form_errors.get('transaction_edit', {}) if form_errors else {}) %}
                     <div class="row g-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_fund_id_display" class="form-label">Asset Category</label>
                                 <select class="form-select" id="edit_fund_id_display" disabled>
@@ -412,7 +425,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_symbol" class="form-label">Symbol</label>
                                 <input type="text" class="form-control" id="edit_symbol" name="edit_symbol" maxlength="20" readonly
@@ -431,7 +444,7 @@
                     </div>
 
                     <div class="row g-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_price" class="form-label">Price (per unit)</label>
                                 {% set _tx_edit_errs = (form_errors.get('transaction_edit', {}) if form_errors else {}) %}
@@ -443,7 +456,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_quantity" class="form-label">Quantity</label>
                                 <input type="text" inputmode="decimal" class="form-control {% if _tx_edit_errs.get('edit_quantity') %}is-invalid{% endif %}" id="edit_quantity" name="edit_quantity"
@@ -456,18 +469,18 @@
                     </div>
 
                     <div class="row g-2">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_fees" class="form-label">Fees (Optional)</label>
-                                                <input type="text" inputmode="decimal" class="form-control {% if _tx_edit_errs.get('edit_fees') %}is-invalid{% endif %}" id="edit_fees" name="edit_fees"
-                                                    placeholder="0.00">
+                                <input type="text" inputmode="decimal" class="form-control {% if _tx_edit_errs.get('edit_fees') %}is-invalid{% endif %}" id="edit_fees" name="edit_fees"
+                                    placeholder="0.00">
                                 {% if _tx_edit_errs.get('edit_fees') %}
                                 <div class="invalid-feedback">{{ _tx_edit_errs.get('edit_fees') }}</div>
                                 {% endif %}
                                 <div id="edit_total_cost_preview" class="tx-preview"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_date" class="form-label">Date</label>
                                 <input type="text" class="form-control {% if _tx_edit_errs.get('edit_date') %}is-invalid{% endif %}" id="edit_date" name="edit_date" placeholder="YYYY-MM-DD">
@@ -550,19 +563,18 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
 <script>
-function ensureEditDatePicker() {
-    const el = document.getElementById('edit_date');
-    if (!el) return;
-
-    // Avoid re-initialization if modal opened multiple times.
-    if (el._flatpickr) return;
-    if (!window.flatpickr) return;
-
-    window.flatpickr(el, {
-        dateFormat: 'Y-m-d',
-        allowInput: true,
-    });
+function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
+
+function initFlatpickr(id) {
+    const el = document.getElementById(id);
+    if (!el || el._flatpickr || !window.flatpickr) return;
+    window.flatpickr(el, { dateFormat: 'Y-m-d', allowInput: true });
+}
+
+function ensureEditDatePicker() { initFlatpickr('edit_date'); }
 
 function openAddAssetModal() {
     const modalEl = document.getElementById('addAssetModal');
@@ -613,6 +625,9 @@ function openAddAssetModal() {
                 if (feesEl && vals.fees != null && String(vals.fees) !== '') feesEl.value = String(vals.fees);
                 if (notesEl && vals.notes != null) notesEl.value = String(vals.notes);
 
+                const dateEl = document.getElementById('add_tx_date');
+                dateEl.value = vals.date ? String(vals.date) : todayStr();
+
                 if (priceEl) priceEl.dispatchEvent(new Event('input'));
                 if (qtyEl) qtyEl.dispatchEvent(new Event('input'));
                 if (feesEl) feesEl.dispatchEvent(new Event('input'));
@@ -637,6 +652,7 @@ function openAddAssetModal() {
                     }
                 }
 
+                initFlatpickr('add_tx_date');
                 const modalEl = document.getElementById('addTransactionModal');
                 if (modalEl) new bootstrap.Modal(modalEl).show();
             }
@@ -727,10 +743,15 @@ function openAddTransactionModal(fundId, categoryName, symbol, forcedType) {
 
     symbolInput.value = symbol ? (symbol || '').toUpperCase() : '';
 
+    const dateInput = document.getElementById('add_tx_date');
+
     if (priceInput) priceInput.value = '';
     if (quantityInput) quantityInput.value = '';
     if (feesInput) feesInput.value = '0';
     if (notesInput) notesInput.value = '';
+    if (dateInput) dateInput.value = todayStr();
+
+    initFlatpickr('add_tx_date');
 
     if (forcedType && typeSelect) {
         typeSelect.value = forcedType;

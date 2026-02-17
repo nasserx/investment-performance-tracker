@@ -35,6 +35,17 @@ class FundAddForm(BaseForm):
         if amount is not None:
             self.cleaned_data['amount'] = amount
 
+        # Validate date (required)
+        date_str = self._get_string('add_fund_date', default='')
+        if not date_str:
+            self.errors['add_fund_date'] = 'Required.'
+        else:
+            from datetime import datetime
+            try:
+                self.cleaned_data['date'] = datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                self.errors['add_fund_date'] = 'Invalid date format. Use YYYY-MM-DD.'
+
         return not self.has_errors()
 
 
@@ -66,6 +77,17 @@ class FundDepositForm(BaseForm):
         # Get notes (optional)
         self.cleaned_data['notes'] = self._get_string('notes', default='')
 
+        # Validate date (required)
+        date_str = self._get_string('deposit_date', default='')
+        if not date_str:
+            self.errors['deposit_date'] = 'Required.'
+        else:
+            from datetime import datetime
+            try:
+                self.cleaned_data['date'] = datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                self.errors['deposit_date'] = 'Invalid date format. Use YYYY-MM-DD.'
+
         return not self.has_errors()
 
 
@@ -96,6 +118,17 @@ class FundWithdrawForm(BaseForm):
 
         # Get notes (optional)
         self.cleaned_data['notes'] = self._get_string('notes', default='')
+
+        # Validate date (required)
+        date_str = self._get_string('withdraw_date', default='')
+        if not date_str:
+            self.errors['withdraw_date'] = 'Required.'
+        else:
+            from datetime import datetime
+            try:
+                self.cleaned_data['date'] = datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                self.errors['withdraw_date'] = 'Invalid date format. Use YYYY-MM-DD.'
 
         return not self.has_errors()
 

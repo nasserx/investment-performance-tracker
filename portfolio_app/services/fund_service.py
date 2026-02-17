@@ -27,7 +27,7 @@ class FundService:
     # Fund CRUD
     # ------------------------------------------------------------------
 
-    def create_fund(self, category: str, amount: Decimal, notes: str = 'Initial funding') -> Fund:
+    def create_fund(self, category: str, amount: Decimal, notes: str = 'Initial funding', date: Optional[Any] = None) -> Fund:
         """Create new fund with initial deposit event."""
         if self.fund_repo.get_by_category(category):
             raise ValueError('Fund already exists')
@@ -42,6 +42,8 @@ class FundService:
             amount_delta=amount,
             notes=notes
         )
+        if date is not None:
+            event.date = date
         self.event_repo.add(event)
         self.fund_repo.commit()
 
@@ -59,20 +61,20 @@ class FundService:
     # Deposit / Withdraw
     # ------------------------------------------------------------------
 
-    def deposit_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None) -> Fund:
+    def deposit_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None, date: Optional[Any] = None) -> Fund:
         """Deposit funds into a category."""
         fund = self._require_fund(fund_id)
         fund.amount = _to_decimal(fund.amount) + amount_delta
-        self._create_event(fund_id, EventType.DEPOSIT, amount_delta, notes)
+        self._create_event(fund_id, EventType.DEPOSIT, amount_delta, notes, date)
         self.fund_repo.commit()
         return fund
 
-    def withdraw_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None) -> Fund:
+    def withdraw_funds(self, fund_id: int, amount_delta: Decimal, notes: Optional[str] = None, date: Optional[Any] = None) -> Fund:
         """Withdraw funds from a category (amount_delta is positive)."""
         fund = self._require_fund(fund_id)
         fund.amount = _to_decimal(fund.amount) - amount_delta
         # Store withdrawal as negative delta for accurate fund history
-        self._create_event(fund_id, EventType.WITHDRAWAL, -amount_delta, notes)
+        self._create_event(fund_id, EventType.WITHDRAWAL, -amount_delta, notes, date)
         self.fund_repo.commit()
         return fund
 
@@ -142,7 +144,7 @@ class FundService:
             raise ValueError('Event not found')
         return event
 
-    def _create_event(self, fund_id: int, event_type: str, amount_delta: Decimal, notes: Optional[str]) -> FundEvent:
+    def _create_event(self, fund_id: int, event_type: str, amount_delta: Decimal, notes: Optional[str], date: Optional[Any] = None) -> FundEvent:
         """Create and persist a new fund event."""
         event = FundEvent(
             fund_id=fund_id,
@@ -150,6 +152,8 @@ class FundService:
             amount_delta=amount_delta,
             notes=notes
         )
+        if date is not None:
+            event.date = date
         self.event_repo.add(event)
         return event
 

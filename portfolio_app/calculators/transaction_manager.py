@@ -8,7 +8,7 @@ class TransactionManager:
     """Manager for transaction operations"""
 
     @staticmethod
-    def create_transaction(fund_id, transaction_type, price, quantity, fees, notes='', symbol=None):
+    def create_transaction(fund_id, transaction_type, price, quantity, fees, notes='', symbol=None, date=None):
         """Create a new transaction and update calculations"""
         symbol = PortfolioCalculator.normalize_symbol(symbol)
         transaction = Transaction(
@@ -20,6 +20,8 @@ class TransactionManager:
             fees=fees,
             notes=notes
         )
+        if date is not None:
+            transaction.date = date
 
         transaction.calculate_total_cost()
         return transaction

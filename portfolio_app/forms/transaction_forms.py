@@ -77,6 +77,17 @@ class TransactionAddForm(BaseForm):
         # Get notes (optional)
         self.cleaned_data['notes'] = self._get_string('notes', default='')
 
+        # Validate date (required)
+        date_str = self._get_string('date', default='')
+        if not date_str:
+            self.errors['date'] = 'Required.'
+        else:
+            from datetime import datetime
+            try:
+                self.cleaned_data['date'] = datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                self.errors['date'] = 'Invalid date format. Use YYYY-MM-DD.'
+
         return not self.has_errors()
 
 

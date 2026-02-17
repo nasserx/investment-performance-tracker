@@ -848,20 +848,23 @@ class FormValidatorsInitializer {
     }
 
     initializeAllValidators() {
-        // Add funds modal
+        // Add funds modal (deposit)
         this.initValidator('#addFundsForm', [
-            { ...ValidationRules.fundsAmount, selector: '#add_funds_amount' }
+            { ...ValidationRules.fundsAmount, selector: '#add_funds_amount' },
+            { ...ValidationRules.date, selector: '#deposit_date', name: 'deposit_date' }
         ]);
 
         // Withdraw funds modal
         this.initValidator('#withdrawFundsForm', [
-            { ...ValidationRules.fundsAmount, selector: '#withdraw_funds_amount' }
+            { ...ValidationRules.fundsAmount, selector: '#withdraw_funds_amount' },
+            { ...ValidationRules.date, selector: '#withdraw_date', name: 'withdraw_date' }
         ]);
 
         // Add funds entry form
         this.initValidator('form[action$="/funds/add"]', [
             { ...ValidationRules.category, selector: '#category' },
-            { ...ValidationRules.fundsAmount, selector: '#amount', name: 'amount' }
+            { ...ValidationRules.fundsAmount, selector: '#amount', name: 'amount' },
+            { ...ValidationRules.date, selector: '#add_fund_date', name: 'add_fund_date' }
         ]);
 
         // Edit fund event
@@ -886,7 +889,8 @@ class FormValidatorsInitializer {
             { ...ValidationRules.quantity, selector: '#quantity',
                 validate: ValidationRules.requiresTransactionType(ValidationRules.quantity) },
             { ...ValidationRules.fees, selector: '#fees',
-                validate: ValidationRules.requiresTransactionType(ValidationRules.fees) }
+                validate: ValidationRules.requiresTransactionType(ValidationRules.fees) },
+            { ...ValidationRules.date, selector: '#add_tx_date' }
         ]);
 
         // Edit transaction
@@ -1029,12 +1033,13 @@ class ModalAjaxHandler {
             targetField = modal.querySelector('#edit_price, #price');
         } else if (msg.includes('price')) {
             targetField = modal.querySelector('#edit_price, #price');
+        } else if (msg.includes('date')) {
+            targetField = modal.querySelector('#edit_date, #add_tx_date, #edit_event_date, #deposit_date, #withdraw_date, #add_fund_date');
         }
 
-        // Fallback: use quantity field or first visible input
+        // Fallback: first visible input (not hidden/disabled/readonly)
         if (!targetField) {
-            targetField = modal.querySelector('#edit_quantity, #quantity') ||
-                          modal.querySelector('.modal-body input:not([type="hidden"]):not([disabled]):not([readonly])');
+            targetField = modal.querySelector('.modal-body input:not([type="hidden"]):not([disabled]):not([readonly])');
         }
 
         if (targetField) {

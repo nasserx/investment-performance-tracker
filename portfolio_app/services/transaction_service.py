@@ -44,7 +44,8 @@ class TransactionService:
         price: Decimal,
         quantity: Decimal,
         fees: Decimal,
-        notes: str = ''
+        notes: str = '',
+        date: Optional[Any] = None
     ) -> Transaction:
         """Add a new transaction.
 
@@ -77,7 +78,8 @@ class TransactionService:
             price=price,
             quantity=quantity,
             fees=fees,
-            notes=notes
+            notes=notes,
+            date=date
         )
 
         self.transaction_repo.add(transaction)

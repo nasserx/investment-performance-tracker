@@ -178,21 +178,35 @@
                         <label class="form-label">Asset Category</label>
                         <input type="text" class="form-control" id="add_funds_category" readonly>
                     </div>
-                    <div class="mb-3">
-                        <label for="add_funds_amount" class="form-label">Amount</label>
-                           {% set _dep_errs = (form_errors.get('funds_deposit', {}) if form_errors else {}) %}
-                           {% set _dep_vals = (form_values.get('funds_deposit', {}) if form_values else {}) %}
-                           <input type="text" inputmode="decimal" class="form-control {% if _dep_errs.get('amount_delta') %}is-invalid{% endif %}" id="add_funds_amount" name="amount_delta"
-                               placeholder="0.00"
-                               value="{{ _dep_vals.get('amount_delta', '') }}">
-                           {% if _dep_errs.get('amount_delta') %}
-                           <div class="invalid-feedback">{{ _dep_errs.get('amount_delta') }}</div>
-                           {% endif %}
+                    {% set _dep_errs = (form_errors.get('funds_deposit', {}) if form_errors else {}) %}
+                    {% set _dep_vals = (form_values.get('funds_deposit', {}) if form_values else {}) %}
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="add_funds_amount" class="form-label">Amount</label>
+                                <input type="text" inputmode="decimal" class="form-control {% if _dep_errs.get('amount_delta') %}is-invalid{% endif %}" id="add_funds_amount" name="amount_delta"
+                                    placeholder="0.00"
+                                    value="{{ _dep_vals.get('amount_delta', '') }}">
+                                {% if _dep_errs.get('amount_delta') %}
+                                <div class="invalid-feedback">{{ _dep_errs.get('amount_delta') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="deposit_date" class="form-label">Date</label>
+                                <input type="text" class="form-control {% if _dep_errs.get('deposit_date') %}is-invalid{% endif %}" id="deposit_date" name="deposit_date" placeholder="YYYY-MM-DD"
+                                    value="{{ _dep_vals.get('deposit_date', '') }}">
+                                {% if _dep_errs.get('deposit_date') %}
+                                <div class="invalid-feedback d-block">{{ _dep_errs.get('deposit_date') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="add_funds_notes" class="form-label">Notes (optional)</label>
-                           <input type="text" class="form-control" id="add_funds_notes" name="notes" maxlength="200" placeholder="e.g., monthly top-up"
-                               value="{{ _dep_vals.get('notes', '') }}">
+                        <input type="text" class="form-control" id="add_funds_notes" name="notes" maxlength="200" placeholder="e.g., monthly top-up"
+                            value="{{ _dep_vals.get('notes', '') }}">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -218,21 +232,35 @@
                         <label class="form-label">Asset Category</label>
                         <input type="text" class="form-control" id="withdraw_funds_category" readonly>
                     </div>
-                    <div class="mb-3">
-                        <label for="withdraw_funds_amount" class="form-label">Amount</label>
-                           {% set _with_errs = (form_errors.get('funds_withdraw', {}) if form_errors else {}) %}
-                           {% set _with_vals = (form_values.get('funds_withdraw', {}) if form_values else {}) %}
-                           <input type="text" inputmode="decimal" class="form-control {% if _with_errs.get('amount_delta') %}is-invalid{% endif %}" id="withdraw_funds_amount" name="amount_delta"
-                               placeholder="0.00"
-                               value="{{ _with_vals.get('amount_delta', '') }}">
-                           {% if _with_errs.get('amount_delta') %}
-                           <div class="invalid-feedback">{{ _with_errs.get('amount_delta') }}</div>
-                           {% endif %}
+                    {% set _with_errs = (form_errors.get('funds_withdraw', {}) if form_errors else {}) %}
+                    {% set _with_vals = (form_values.get('funds_withdraw', {}) if form_values else {}) %}
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="withdraw_funds_amount" class="form-label">Amount</label>
+                                <input type="text" inputmode="decimal" class="form-control {% if _with_errs.get('amount_delta') %}is-invalid{% endif %}" id="withdraw_funds_amount" name="amount_delta"
+                                    placeholder="0.00"
+                                    value="{{ _with_vals.get('amount_delta', '') }}">
+                                {% if _with_errs.get('amount_delta') %}
+                                <div class="invalid-feedback">{{ _with_errs.get('amount_delta') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="withdraw_date" class="form-label">Date</label>
+                                <input type="text" class="form-control {% if _with_errs.get('withdraw_date') %}is-invalid{% endif %}" id="withdraw_date" name="withdraw_date" placeholder="YYYY-MM-DD"
+                                    value="{{ _with_vals.get('withdraw_date', '') }}">
+                                {% if _with_errs.get('withdraw_date') %}
+                                <div class="invalid-feedback d-block">{{ _with_errs.get('withdraw_date') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="withdraw_funds_notes" class="form-label">Notes (optional)</label>
-                           <input type="text" class="form-control" id="withdraw_funds_notes" name="notes" maxlength="200" placeholder="e.g., rebalance / cash out"
-                               value="{{ _with_vals.get('notes', '') }}">
+                        <input type="text" class="form-control" id="withdraw_funds_notes" name="notes" maxlength="200" placeholder="e.g., rebalance / cash out"
+                            value="{{ _with_vals.get('notes', '') }}">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -268,14 +296,28 @@
                         <div class="invalid-feedback">{{ _add_errs.get('category') }}</div>
                         {% endif %}
                     </div>
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount</label>
-                           <input type="text" inputmode="decimal" class="form-control {% if _add_errs.get('amount') %}is-invalid{% endif %}" id="amount" name="amount"
-                               placeholder="0.00"
-                               value="{{ _add_vals.get('amount', '') }}">
-                        {% if _add_errs.get('amount') %}
-                        <div class="invalid-feedback">{{ _add_errs.get('amount') }}</div>
-                        {% endif %}
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="text" inputmode="decimal" class="form-control {% if _add_errs.get('amount') %}is-invalid{% endif %}" id="amount" name="amount"
+                                    placeholder="0.00"
+                                    value="{{ _add_vals.get('amount', '') }}">
+                                {% if _add_errs.get('amount') %}
+                                <div class="invalid-feedback">{{ _add_errs.get('amount') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="add_fund_date" class="form-label">Date</label>
+                                <input type="text" class="form-control {% if _add_errs.get('add_fund_date') %}is-invalid{% endif %}" id="add_fund_date" name="add_fund_date" placeholder="YYYY-MM-DD"
+                                    value="{{ _add_vals.get('add_fund_date', '') }}">
+                                {% if _add_errs.get('add_fund_date') %}
+                                <div class="invalid-feedback d-block">{{ _add_errs.get('add_fund_date') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -297,33 +339,38 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    {% set _evt_errs = (form_errors.get('funds_event_edit', {}) if form_errors else {}) %}
+                    {% set _evt_vals = (form_values.get('funds_event_edit', {}) if form_values else {}) %}
                     <div class="mb-3">
                         <label class="form-label">Type</label>
                         <input type="text" class="form-control" id="edit_event_type" readonly>
                     </div>
-                    <div class="mb-3">
-                        <label for="edit_event_date" class="form-label">Date</label>
-                           {% set _evt_errs = (form_errors.get('funds_event_edit', {}) if form_errors else {}) %}
-                           {% set _evt_vals = (form_values.get('funds_event_edit', {}) if form_values else {}) %}
-                           <input type="text" class="form-control {% if _evt_errs.get('date') %}is-invalid{% endif %}" id="edit_event_date" name="date" placeholder="YYYY-MM-DD"
-                               value="{{ _evt_vals.get('date', '') }}">
-                           {% if _evt_errs.get('date') %}
-                           <div class="invalid-feedback">{{ _evt_errs.get('date') }}</div>
-                           {% endif %}
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_event_amount" class="form-label">Amount</label>
-                           <input type="text" inputmode="decimal" class="form-control {% if _evt_errs.get('edit_event_amount') %}is-invalid{% endif %}" id="edit_event_amount" name="edit_event_amount"
-                               placeholder="0.00"
-                               value="{{ _evt_vals.get('edit_event_amount', '') }}">
-                           {% if _evt_errs.get('edit_event_amount') %}
-                           <div class="invalid-feedback">{{ _evt_errs.get('edit_event_amount') }}</div>
-                           {% endif %}
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="edit_event_amount" class="form-label">Amount</label>
+                                <input type="text" inputmode="decimal" class="form-control {% if _evt_errs.get('edit_event_amount') %}is-invalid{% endif %}" id="edit_event_amount" name="edit_event_amount"
+                                    placeholder="0.00"
+                                    value="{{ _evt_vals.get('edit_event_amount', '') }}">
+                                {% if _evt_errs.get('edit_event_amount') %}
+                                <div class="invalid-feedback">{{ _evt_errs.get('edit_event_amount') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="edit_event_date" class="form-label">Date</label>
+                                <input type="text" class="form-control {% if _evt_errs.get('date') %}is-invalid{% endif %}" id="edit_event_date" name="date" placeholder="YYYY-MM-DD"
+                                    value="{{ _evt_vals.get('date', '') }}">
+                                {% if _evt_errs.get('date') %}
+                                <div class="invalid-feedback">{{ _evt_errs.get('date') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="edit_event_notes" class="form-label">Notes (optional)</label>
-                           <input type="text" class="form-control" id="edit_event_notes" name="edit_event_notes" maxlength="200"
-                               value="{{ _evt_vals.get('edit_event_notes', '') }}">
+                        <textarea class="form-control" id="edit_event_notes" name="edit_event_notes" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -393,17 +440,18 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
 <script>
-function ensureFundEventDatePicker() {
-    const el = document.getElementById('edit_event_date');
-    if (!el) return;
-    if (el._flatpickr) return;
-    if (!window.flatpickr) return;
-
-    window.flatpickr(el, {
-        dateFormat: 'Y-m-d',
-        allowInput: true,
-    });
+function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
+
+function initFlatpickr(id) {
+    const el = document.getElementById(id);
+    if (!el || el._flatpickr || !window.flatpickr) return;
+    window.flatpickr(el, { dateFormat: 'Y-m-d', allowInput: true });
+}
+
+function ensureFundEventDatePicker() { initFlatpickr('edit_event_date'); }
 
 function displayEventType(eventType) {
     const map = {
@@ -435,7 +483,9 @@ function depositFunds(id, category, opts) {
     document.getElementById('addFundsForm').action = `/funds/deposit/${id}`;
     document.getElementById('add_funds_category').value = category || '';
     document.getElementById('add_funds_amount').value = (opts.amount != null ? String(opts.amount) : '');
+    document.getElementById('deposit_date').value = (opts.date != null && opts.date !== '' ? String(opts.date) : todayStr());
     document.getElementById('add_funds_notes').value = (opts.notes != null ? String(opts.notes) : '');
+    initFlatpickr('deposit_date');
     new bootstrap.Modal(document.getElementById('addFundsModal')).show();
 }
 
@@ -444,7 +494,9 @@ function withdrawFunds(id, category, opts) {
     document.getElementById('withdrawFundsForm').action = `/funds/withdraw/${id}`;
     document.getElementById('withdraw_funds_category').value = category || '';
     document.getElementById('withdraw_funds_amount').value = (opts.amount != null ? String(opts.amount) : '');
+    document.getElementById('withdraw_date').value = (opts.date != null && opts.date !== '' ? String(opts.date) : todayStr());
     document.getElementById('withdraw_funds_notes').value = (opts.notes != null ? String(opts.notes) : '');
+    initFlatpickr('withdraw_date');
     new bootstrap.Modal(document.getElementById('withdrawFundsModal')).show();
 }
 
@@ -470,16 +522,21 @@ function editFundEvent(eventId, eventType, amountDelta, notes, dateShort) {
             if (which === 'addFundsModal' && payload && payload.fund_id) {
                 depositFunds(payload.fund_id, payload.category || '', {
                     amount: {{ (_dep_vals.get('amount_delta', '') if form_values and form_values.get('funds_deposit') else '') | tojson }},
+                    date: {{ (_dep_vals.get('deposit_date', '') if form_values and form_values.get('funds_deposit') else '') | tojson }},
                     notes: {{ (_dep_vals.get('notes', '') if form_values and form_values.get('funds_deposit') else '') | tojson }},
                 });
             }
             if (which === 'withdrawFundsModal' && payload && payload.fund_id) {
                 withdrawFunds(payload.fund_id, payload.category || '', {
                     amount: {{ (_with_vals.get('amount_delta', '') if form_values and form_values.get('funds_withdraw') else '') | tojson }},
+                    date: {{ (_with_vals.get('withdraw_date', '') if form_values and form_values.get('funds_withdraw') else '') | tojson }},
                     notes: {{ (_with_vals.get('notes', '') if form_values and form_values.get('funds_withdraw') else '') | tojson }},
                 });
             }
             if (which === 'addFundEntryModal') {
+                const dateEl = document.getElementById('add_fund_date');
+                if (dateEl && !dateEl.value) dateEl.value = todayStr();
+                initFlatpickr('add_fund_date');
                 new bootstrap.Modal(document.getElementById('addFundEntryModal')).show();
             }
             if (which === 'editFundEventModal' && payload && payload.event_id) {
@@ -575,5 +632,12 @@ function deleteFund(id, category) {
         }
     }, true);
 })();
+
+// Init Flatpickr and set today's date when Add Fund modal opens
+document.getElementById('addFundEntryModal')?.addEventListener('shown.bs.modal', function() {
+    const dateEl = document.getElementById('add_fund_date');
+    if (dateEl && !dateEl.value) dateEl.value = todayStr();
+    initFlatpickr('add_fund_date');
+});
 </script>
 {% endblock %}
