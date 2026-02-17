@@ -21,6 +21,14 @@ htmlcov/
 *.sqlite3
 
 
+# Instance / runtime
+instance/
+*.log
+*.pid
+
+# Startup script
+InvestmentTrackerStartup.vbs
+
 # OS / editor
 .DS_Store
 Thumbs.db
