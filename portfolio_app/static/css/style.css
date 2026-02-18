@@ -241,7 +241,10 @@ label,
     background-color: var(--header-bg) !important;
     border-bottom: none;
     box-shadow: 0 1px 3px 0 var(--header-shadow);
-    padding: 0.75rem 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .app-navbar .navbar-brand {
@@ -274,26 +277,42 @@ label,
     font-weight: 500;
 }
 
-/* Theme toggle button */
-.theme-toggle-btn {
+/* Settings dropdown button */
+.settings-btn {
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 1.125rem;
     transition: all var(--transition-fast);
+    padding: 0.5rem !important;
+    margin-right: 0 !important;
 }
 
-.theme-toggle-btn:hover {
-    transform: scale(1.1);
-}
-
-.theme-toggle-btn:focus {
+.settings-btn:focus {
     outline: none;
     box-shadow: none;
 }
 
-.theme-toggle-btn i {
-    transition: all var(--transition-fast);
+/* Positioning handled by Bootstrap JS (via mouseenter) */
+
+/* Dropdown panel */
+.settings-menu {
+    min-width: 210px;
+    padding: 0.4rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Each row */
+.settings-item {
+    border-radius: var(--border-radius-sm);
+    padding: 0.55rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.settings-item:hover {
+    background-color: var(--surface-hover);
 }
 
 

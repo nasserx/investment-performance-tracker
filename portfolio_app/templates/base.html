@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('theme') || 'light')</script>
+    <script>document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -48,11 +48,37 @@
                             Transactions
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-link theme-toggle-btn" id="themeToggle" type="button" aria-label="Toggle theme">
-                            <i class="bi bi-sun-fill theme-icon-light"></i>
-                            <i class="bi bi-moon-fill theme-icon-dark" style="display: none;"></i>
+                    <li class="nav-item dropdown settings-dropdown">
+                        <button class="nav-link settings-btn" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                                aria-expanded="false" aria-label="Settings">
+                            <i class="bi bi-list fs-5"></i>
                         </button>
+                        <ul class="dropdown-menu dropdown-menu-end settings-menu">
+                            <!-- Dark Mode -->
+                            <li>
+                                <label class="dropdown-item d-flex align-items-center justify-content-between settings-item">
+                                    <span class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-moon-stars"></i> Dark Mode
+                                    </span>
+                                    <div class="form-check form-switch mb-0 ms-3">
+                                        <input class="form-check-input" type="checkbox" id="darkModeSwitch" role="switch">
+                                    </div>
+                                </label>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <!-- Language (placeholder) -->
+                            <li>
+                                <div class="dropdown-item d-flex align-items-center justify-content-between settings-item text-muted">
+                                    <span class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-translate"></i> Language
+                                    </span>
+                                    <span class="small d-flex align-items-center gap-1">
+                                        EN <i class="bi bi-chevron-right"></i>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -83,40 +109,53 @@
 
     <!-- Theme Toggle Script -->
     <script>
-        // Theme toggle functionality
         (function() {
-            const htmlElement = document.documentElement;
-            const themeToggleBtn = document.getElementById('themeToggle');
-            const iconLight = document.querySelector('.theme-icon-light');
-            const iconDark = document.querySelector('.theme-icon-dark');
+            const html = document.documentElement;
+            const switchEl = document.getElementById('darkModeSwitch');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
 
-            // Get saved theme from localStorage or default to light
-            const savedTheme = localStorage.getItem('theme') || 'light';
-
-            // Apply saved theme on page load
-            function applyTheme(theme) {
-                htmlElement.setAttribute('data-bs-theme', theme);
-                if (theme === 'dark') {
-                    iconLight.style.display = 'none';
-                    iconDark.style.display = 'inline-block';
-                } else {
-                    iconLight.style.display = 'inline-block';
-                    iconDark.style.display = 'none';
-                }
+            function applyTheme(isDark) {
+                html.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+                if (switchEl) switchEl.checked = isDark;
             }
 
-            // Initialize theme
-            applyTheme(savedTheme);
+            // Default: saved preference OR system preference
+            const saved = localStorage.getItem('theme');
+            applyTheme(saved ? saved === 'dark' : systemDark.matches);
 
-            // Toggle theme on button click
-            themeToggleBtn.addEventListener('click', function() {
-                const currentTheme = htmlElement.getAttribute('data-bs-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            // Switch toggle → save to localStorage
+            if (switchEl) {
+                switchEl.addEventListener('change', function() {
+                    localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+                    applyTheme(this.checked);
+                });
+            }
 
-                applyTheme(newTheme);
-                localStorage.setItem('theme', newTheme);
+            // Follow system changes if user has no saved preference
+            systemDark.addEventListener('change', function(e) {
+                if (!localStorage.getItem('theme')) applyTheme(e.matches);
             });
         })();
+    </script>
+
+    <!-- Settings dropdown: show/hide on hover using Bootstrap API -->
+    <script>
+        document.querySelectorAll('.settings-dropdown').forEach(function(el) {
+            const toggle = el.querySelector('[data-bs-toggle="dropdown"]');
+            const menu = el.querySelector('.dropdown-menu');
+            const dropdown = bootstrap.Dropdown.getOrCreateInstance(toggle, { offset: [0, 0] });
+            let hideTimer;
+
+            function scheduleHide() { hideTimer = setTimeout(function() { dropdown.hide(); }, 80); }
+            function cancelHide() { clearTimeout(hideTimer); }
+
+            el.addEventListener('mouseenter', function() { cancelHide(); dropdown.show(); });
+            el.addEventListener('mouseleave', scheduleHide);
+            if (menu) {
+                menu.addEventListener('mouseenter', cancelHide);
+                menu.addEventListener('mouseleave', scheduleHide);
+            }
+        });
     </script>
 
     <!-- Custom JS -->
