@@ -54,13 +54,12 @@
     <div class="col-md-6 col-lg-4">
         <div class="card border-0 shadow-sm h-100 category-card page-accent-surface">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="mb-3">
                     <h5 class="card-title mb-0">
                         {% set icon, color = category_icons.get(item.category, category_icon_default) %}
                         <i class="bi {{ icon }} {{ color }}"></i>
                         {{ item.category }}
                     </h5>
-                    <span class="allocation-corner">Allocation {{ "{:,.1f}".format(item.allocation) }}%</span>
                 </div>
                 
                 <div class="mb-3">

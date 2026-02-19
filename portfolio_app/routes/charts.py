@@ -1,0 +1,21 @@
+"""Charts blueprint - Portfolio charts and visualizations."""
+
+from flask import Blueprint, render_template
+from portfolio_app.services import get_services
+
+charts_bp = Blueprint('charts', __name__)
+
+
+@charts_bp.route('/charts')
+def charts() -> str:
+    """Charts page - Portfolio visualizations."""
+    svc = get_services()
+    summary, _ = svc.portfolio_service.get_portfolio_summary()
+
+    chart_data = {
+        'categories': [item['category'] for item in summary],
+        'allocations': [float(item['allocation']) for item in summary],
+        'realized_pnl': [float(item['realized_pnl']) for item in summary],
+    }
+
+    return render_template('charts.html', chart_data=chart_data)

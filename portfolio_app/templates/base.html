@@ -48,6 +48,12 @@
                             Transactions
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'charts.charts' %}active{% endif %}"
+                           href="{{ url_for('charts.charts') }}">
+                            Charts
+                        </a>
+                    </li>
                     <li class="nav-item dropdown settings-dropdown">
                         <button class="nav-link settings-btn" type="button"
                                 data-bs-toggle="dropdown" data-bs-auto-close="outside"

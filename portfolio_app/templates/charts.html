@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Charts - Investment Portfolio{% endblock %}
+
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-0">Charts</h1>
+    </div>
+</div>
+
+{% if chart_data.categories %}
+<div class="row g-4">
+
+    <!-- Allocation Donut -->
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+            <div class="card-body p-4">
+                <h6 class="text-muted text-uppercase small fw-semibold mb-3">Portfolio Allocation</h6>
+                <div class="d-flex justify-content-center">
+                    <canvas id="allocationChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Realized P&L Bar -->
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+            <div class="card-body p-4">
+                <h6 class="text-muted text-uppercase small fw-semibold mb-3">Realized P&L by Category</h6>
+                <div>
+                    <canvas id="pnlChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add new chart cards here -->
+
+</div>
+
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <p class="text-muted">No data available. <a href="{{ url_for('funds.funds_list') }}">Add funds</a> to get started.</p>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const chartData = {{ chart_data | tojson }};
+
+    // Category color palette (matches icon colors in config)
+    const CATEGORY_COLORS = {
+        'Stocks':      '#198754',
+        'ETFs':        '#0dcaf0',
+        'Commodities': '#ffc107',
+        'Crypto':      '#dc3545',
+    };
+    const DEFAULT_COLOR = '#6c757d';
+
+    function categoryColor(name) {
+        return CATEGORY_COLORS[name] || DEFAULT_COLOR;
+    }
+
+    // Detect dark mode for chart text/grid colors
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const textColor  = isDark ? '#adb5bd' : '#6c757d';
+    const gridColor  = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+
+    const colors = chartData.categories.map(categoryColor);
+
+    // ── Allocation Donut ──────────────────────────────────────────────
+    new Chart(document.getElementById('allocationChart'), {
+        type: 'doughnut',
+        data: {
+            labels: chartData.categories,
+            datasets: [{
+                data: chartData.allocations,
+                backgroundColor: colors,
+                borderWidth: 0,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { color: textColor, padding: 16, font: { size: 13 }, boxWidth: 14 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            return ' ' + ctx.label + ': ' + ctx.parsed.toFixed(1) + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // ── Realized P&L Bar ─────────────────────────────────────────────
+    const pnlColors = chartData.realized_pnl.map(function(v) {
+        return v >= 0 ? 'rgba(25, 135, 84, 0.80)' : 'rgba(220, 53, 69, 0.80)';
+    });
+    const pnlBorder = chartData.realized_pnl.map(function(v) {
+        return v >= 0 ? '#198754' : '#dc3545';
+    });
+
+    new Chart(document.getElementById('pnlChart'), {
+        type: 'bar',
+        data: {
+            labels: chartData.categories,
+            datasets: [{
+                label: 'Realized P&L',
+                data: chartData.realized_pnl,
+                backgroundColor: pnlColors,
+                borderColor: pnlBorder,
+                borderWidth: 1.5,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            const v = ctx.parsed.y;
+                            const sign = v >= 0 ? '+' : '';
+                            return ' ' + sign + v.toFixed(2);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: textColor },
+                    grid: { color: gridColor }
+                },
+                y: {
+                    ticks: {
+                        color: textColor,
+                        callback: function(v) {
+                            return (v >= 0 ? '+' : '') + v.toFixed(0);
+                        }
+                    },
+                    grid: { color: gridColor }
+                }
+            }
+        }
+    });
+})();
+</script>
+{% endblock %}
