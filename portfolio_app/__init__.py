@@ -38,6 +38,14 @@ def create_app(config_class=Config):
     # Template filters
     app.jinja_env.filters['fmt_decimal'] = fmt_decimal
     app.jinja_env.filters['fmt_money'] = fmt_money
+
+    # Inject category icons into all templates
+    @app.context_processor
+    def inject_category_icons():
+        return {
+            'category_icons': app.config.get('ASSET_CATEGORY_ICONS', {}),
+            'category_icon_default': app.config.get('ASSET_CATEGORY_ICON_DEFAULT', ('bi-folder', 'text-secondary')),
+        }
     
     # Register blueprints
     from portfolio_app.routes import register_blueprints

@@ -25,6 +25,16 @@ class Config:
         'Commodities',
         'Crypto'
     ]
-    
+
+    # Icon mapping per category: (bootstrap-icon-class, text-color-class)
+    # To add a new category icon, add an entry here matching the category name exactly.
+    ASSET_CATEGORY_ICONS = {
+        'Stocks':      ('bi-graph-up',           'text-success'),
+        'ETFs':        ('bi-bar-chart-line',      'text-info'),
+        'Commodities': ('bi-box-seam',            'text-warning'),
+        'Crypto':      ('bi-currency-bitcoin',    'text-danger'),
+    }
+    ASSET_CATEGORY_ICON_DEFAULT = ('bi-folder',  'text-secondary')
+
     # Transaction types
     TRANSACTION_TYPES = ['Buy', 'Sell']
