@@ -543,10 +543,10 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-2">Delete this symbol?</p>
-                    <div class="alert alert-warning mb-2">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        You must delete all transactions for this symbol before removing it.
+                    <p class="mb-2">Delete <strong id="delete_asset_symbol_name"></strong>?</p>
+                    <div id="delete_asset_warning" class="alert alert-warning mb-2 d-none">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        <span id="delete_asset_warning_text"></span>
                     </div>
                     <div id="delete_asset_error" class="alert alert-danger d-none"></div>
                 </div>
@@ -951,6 +951,21 @@ function editTransaction(id, fundId, type, symbol, price, quantity, fees, notes,
     window.openDeleteAssetModal = function(fundId, categoryName, symbol, txCount) {
         if (fundInput) fundInput.value = fundId ? String(fundId) : '';
         if (symbolInput) symbolInput.value = (symbol || '').toUpperCase();
+
+        var symbolName = document.getElementById('delete_asset_symbol_name');
+        var warningDiv = document.getElementById('delete_asset_warning');
+        var warningText = document.getElementById('delete_asset_warning_text');
+
+        if (symbolName) symbolName.textContent = (symbol || '').toUpperCase();
+
+        if (txCount > 0 && warningDiv && warningText) {
+            warningText.textContent = 'This will also permanently delete ' + txCount +
+                ' transaction' + (txCount !== 1 ? 's' : '') + ' for this symbol.';
+            warningDiv.classList.remove('d-none');
+        } else if (warningDiv) {
+            warningDiv.classList.add('d-none');
+        }
+
         hideError();
         submitBtn.disabled = false;
         bootstrap.Modal.getOrCreateInstance(modalEl).show();

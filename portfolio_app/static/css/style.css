@@ -284,7 +284,7 @@ label,
     cursor: pointer;
     transition: all var(--transition-fast);
     padding: 0.5rem !important;
-    margin-right: 0 !important;
+    margin-right: -0.20rem !important;
 }
 
 .settings-btn:focus {

@@ -207,14 +207,14 @@ class TransactionService:
         return asset
 
     def delete_asset(self, fund_id: int, symbol: str) -> None:
-        """Delete a tracked asset.
+        """Delete a tracked asset and all its transactions.
 
         Args:
             fund_id: Fund ID
             symbol: Asset symbol
 
         Raises:
-            ValueError: If asset not found or has transactions
+            ValueError: If asset not found
         """
         symbol = PortfolioCalculator.normalize_symbol(symbol)
 
@@ -222,10 +222,8 @@ class TransactionService:
         if not asset:
             raise ValueError('Asset not found')
 
-        # Check if there are transactions for this asset
-        transactions = self.transaction_repo.get_by_symbol(fund_id, symbol)
-        if transactions:
-            raise ValueError('Cannot delete asset with existing transactions')
+        for tx in self.transaction_repo.get_by_symbol(fund_id, symbol):
+            self.transaction_repo.delete(tx)
 
         self.asset_repo.delete(asset)
         self.asset_repo.commit()
