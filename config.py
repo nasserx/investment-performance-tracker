@@ -20,9 +20,9 @@ class Config:
     
     # Asset categories
     ASSET_CATEGORIES = [
-        'Gold',
         'Stocks',
         'ETFs',
+        'Commodities',
         'Crypto'
     ]
     
