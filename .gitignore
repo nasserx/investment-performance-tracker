@@ -26,9 +26,6 @@ instance/
 *.log
 *.pid
 
-# Startup script
-investmentPerformanceTracker.vbs
-
 # OS / editor
 .DS_Store
 Thumbs.db
