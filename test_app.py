@@ -33,37 +33,37 @@ def setup_test_data():
         db.create_all()
         
         # Create test funds
-        gold = Fund(category='Gold', amount=25000)  # type: ignore[call-arg]
+        commodities = Fund(category='Commodities', amount=25000)  # type: ignore[call-arg]
         stocks = Fund(category='Stocks', amount=40000)  # type: ignore[call-arg]
         etfs = Fund(category='ETFs', amount=200)  # type: ignore[call-arg]
-        
-        db.session.add(gold)
+
+        db.session.add(commodities)
         db.session.add(stocks)
         db.session.add(etfs)
         db.session.commit()
-        
-        # Create test transactions for Gold
+
+        # Create test transactions for Commodities (XAU)
         t1 = Transaction(  # type: ignore[call-arg]
-            fund_id=gold.id,
+            fund_id=commodities.id,
             transaction_type='Buy',
             date=datetime(2026, 1, 10),
             symbol='XAU',
             price=2000,
             quantity=1.5,
             fees=50,
-            notes='Gold purchase'
+            notes='XAU purchase'
         )
         t1.calculate_total_cost()
-        
+
         t2 = Transaction(  # type: ignore[call-arg]
-            fund_id=gold.id,
+            fund_id=commodities.id,
             transaction_type='Buy',
             date=datetime(2026, 1, 15),
             symbol='XAU',
             price=2050,
             quantity=1.0,
             fees=30,
-            notes='Gold purchase 2'
+            notes='XAU purchase 2'
         )
         t2.calculate_total_cost()
         
@@ -146,7 +146,7 @@ def setup_test_data():
         db.session.commit()
         
         # Recalculate average costs after insertions
-        PortfolioCalculator.recalculate_all_averages_for_symbol(gold.id, 'XAU')
+        PortfolioCalculator.recalculate_all_averages_for_symbol(commodities.id, 'XAU')
         PortfolioCalculator.recalculate_all_averages_for_symbol(stocks.id, 'AAPL')
         PortfolioCalculator.recalculate_all_averages_for_symbol(stocks.id, 'MSFT')
         PortfolioCalculator.recalculate_all_averages_for_symbol(etfs.id, 'ETHA')
@@ -160,9 +160,9 @@ def setup_test_data():
         print("PORTFOLIO CALCULATIONS TEST")
         print("=" * 60)
         
-        # Test Gold summary (symbol)
-        gold_summary = PortfolioCalculator.get_symbol_transactions_summary(gold.id, 'XAU')
-        print("\nGold Summary:")
+        # Test Commodities summary (XAU symbol)
+        gold_summary = PortfolioCalculator.get_symbol_transactions_summary(commodities.id, 'XAU')
+        print("\nCommodities Summary (XAU):")
         print(f"  Total Buy Cost: {gold_summary['total_buy_cost']:,.2f}")
         print(f"  Total Buy Fees: {gold_summary['total_buy_fees']:,.2f}")
         print(f"  Total Buy Quantity: {gold_summary['total_buy_quantity']:.4f}")
@@ -196,9 +196,9 @@ def setup_test_data():
         print("VERIFICATION")
         print("=" * 60)
         
-        # Check Gold average cost
+        # Check XAU average cost
         expected_gold_avg = (((1.5 * 2000) + 50) + ((1.0 * 2050) + 30)) / (1.5 + 1.0)
-        print(f"\nGold Average Cost:")
+        print(f"\nCommodities (XAU) Average Cost:")
         print(f"  Expected: {expected_gold_avg:,.4f}")
         print(f"  Actual: {gold_summary['average_cost']:,.4f}")
         print(f"  ✓ PASS" if abs(Decimal(str(expected_gold_avg)) - gold_summary['average_cost']) < Decimal('0.01') else "  ✗ FAIL")

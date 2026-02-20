@@ -9,7 +9,7 @@
 
 ## ✨ Features
 
-- 💰 **Multi-Asset Support**: Track Gold, Stocks, ETFs, Crypto, and more
+- 💰 **Multi-Asset Support**: Track Stocks, ETFs, Commodities, Crypto, and more
 - 📈 **Portfolio Overview**: Calculate portfolio value and realized ROI
 - 💵 **Fund Management**: Deposit/withdraw funds with complete audit trail
 - 🔄 **Transaction Tracking**: Record buy/sell operations with average cost computation

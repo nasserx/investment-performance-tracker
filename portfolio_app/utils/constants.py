@@ -17,8 +17,8 @@ _HTML_ID_RE = re.compile(r'[^A-Za-z0-9_\-]+')
 def safe_html_id(*parts) -> str:
     """Build a safe HTML element ID from arbitrary parts.
 
-    >>> safe_html_id(3, 'Gold')
-    '3-Gold'
+    >>> safe_html_id(3, 'Commodities')
+    '3-Commodities'
     >>> safe_html_id(1, 'My Fund!')
     '1-My_Fund_'
     """
