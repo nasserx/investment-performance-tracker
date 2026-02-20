@@ -29,6 +29,9 @@
 ### Transactions List
 ![Transactions List](screenshots/transactions-list.png)
 
+### Charts
+![Charts](screenshots/charts.png)
+
 ### Add Symbol
 ![Add Symbol](screenshots/add-symbol-modal.png)
 
