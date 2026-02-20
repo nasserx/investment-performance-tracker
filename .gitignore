@@ -27,7 +27,7 @@ instance/
 *.pid
 
 # Startup script
-InvestmentTrackerStartup.vbs
+investmentPerformanceTracker.vbs
 
 # OS / editor
 .DS_Store

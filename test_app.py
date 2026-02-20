@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script to verify the investment portfolio application
+Test script to verify the investment performance application
 """
 
 from portfolio_app import create_app, db
@@ -275,7 +275,7 @@ def test_routes():
 
 if __name__ == '__main__':
     print("\n" + "🚀 " * 10)
-    print("Investment Portfolio Application Test Suite")
+    print("Investment Performance Application Test Suite")
     print("🚀 " * 10 + "\n")
     
     try:
