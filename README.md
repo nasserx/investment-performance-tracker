@@ -126,6 +126,10 @@ investment_portfolio_tracker/
     ├── calculators/        # Calculation utilities (portfolio, transactions)
     ├── forms/              # WTForms (forms, validators)
     ├── routes/             # Application blueprints/routes
+    │   ├── dashboard.py    # Overview & API endpoints
+    │   ├── funds.py        # Funds management
+    │   ├── transactions.py # Transactions management
+    │   └── charts.py       # Charts & visualizations
     ├── utils/              # Utility functions (formatting, http, ...)
     ├── static/             # CSS & JavaScript
     │   ├── css/
@@ -136,7 +140,8 @@ investment_portfolio_tracker/
         ├── base.html
         ├── index.html
         ├── funds.html
-        └── transactions.html
+        ├── transactions.html
+        └── charts.html
 screenshots/                # App screenshots
 ```
 
