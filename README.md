@@ -1,4 +1,4 @@
-# 📊 Investment Portfolio Tracker
+# 📊 Investment Performance Tracker
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/flask-3.0.0-green.svg)
@@ -62,8 +62,8 @@
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/nasserx/investment_portfolio_tracker.git
-cd investment_portfolio_tracker
+git clone https://github.com/nasserx/investment-performance-tracker.git
+cd investment-performance-tracker
 ```
 
 2. **Create virtual environment**
@@ -113,7 +113,7 @@ curl http://localhost:5000/api/portfolio-summary
 ## 📁 Project Structure
 
 ```
-investment_portfolio_tracker/
+investment-performance-tracker/
 ├── app.py                  # Application entry point
 ├── config.py               # Configuration settings
 ├── requirements.txt        # Python dependencies
@@ -214,7 +214,7 @@ This project is for educational and organizational purposes only. It does not pr
 
 **nasserx**
 
-- GitHub: [@nasserx](https://github.com/nasserx)
+- GitHub: [@nasserx](https://github.com/nasserx/investment-performance-tracker)
 
 ## ⭐ Show your support
 
