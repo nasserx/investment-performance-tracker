@@ -25,11 +25,11 @@
 </div>
 
 <!-- Filters -->
-<div class="row mb-3">
+<div class="row mb-3 g-2">
     <div class="col-md-4">
         <form method="GET" action="{{ url_for('transactions.transaction_list') }}">
-            <div class="input-group">
-                <select class="form-select" name="category" onchange="this.form.submit()">
+            <div class="input-group input-group-sm">
+                <select class="form-select form-select-sm" name="category" onchange="this.form.submit()">
                     <option value="">All asset categories</option>
                     {% for fund in funds %}
                     <option value="{{ fund.category }}" {% if selected_category == fund.category %}selected{% endif %}>
@@ -38,12 +38,21 @@
                     {% endfor %}
                 </select>
                 {% if selected_category %}
-                <a href="{{ url_for('transactions.transaction_list') }}" class="btn btn-outline-secondary">
+                <a href="{{ url_for('transactions.transaction_list') }}" class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-x"></i>
                 </a>
                 {% endif %}
             </div>
         </form>
+    </div>
+    <div class="col-md-4">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="symbolSearch"
+                   placeholder="Search symbol..."
+                   oninput="this.value = this.value.toUpperCase(); filterBySymbol(this.value);"
+                   autocomplete="off">
+        </div>
     </div>
 </div>
 
@@ -52,7 +61,7 @@
     <div class="col-12">
         {% if symbol_data|length > 0 %}
             {% for item in symbol_data %}
-            <div class="card border-0 shadow-sm mb-3">
+            <div class="card border-0 shadow-sm mb-3 symbol-card" data-symbol="{{ item.symbol }}">
                  <div class="card-header bg-white border-bottom py-2 px-3 category-header page-accent-surface"
                      onclick="toggleSymbolTransactions('{{ item.group_id }}')">
                     <div class="row align-items-center g-1 summary-row">
@@ -563,6 +572,14 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
 <script>
+function filterBySymbol(query) {
+    var q = query.trim().toUpperCase();
+    document.querySelectorAll('.symbol-card').forEach(function(card) {
+        var symbol = (card.getAttribute('data-symbol') || '').toUpperCase();
+        card.style.display = (!q || symbol.includes(q)) ? '' : 'none';
+    });
+}
+
 function todayStr() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
