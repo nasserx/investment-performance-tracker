@@ -489,8 +489,29 @@ label,
 
 .transactions-table th,
 .transactions-table td {
-    padding: 0.4rem 0.75rem;
-    border-bottom: none !important;
+    padding: 0.3rem 0.75rem;
+    border-bottom: 1px solid var(--border-color) !important;
+    vertical-align: middle;
+    height: 36px;
+}
+
+.transactions-table .badge {
+    font-size: 0.7rem;
+    padding: 0.2em 0.45em;
+    line-height: 1.3;
+}
+
+.transactions-table .btn-sm {
+    padding: 0.1rem 0.3rem;
+    line-height: 1;
+}
+
+.transactions-table .btn-group.btn-group-sm {
+    gap: 6px;
+}
+
+.transactions-table .btn-group.btn-group-sm > .btn {
+    border-radius: var(--border-radius-sm) !important;
 }
 
 .transactions-table thead {
@@ -513,14 +534,6 @@ label,
 .transactions-table tbody tr > * {
     background-color: var(--table-row-bg) !important;
     color: var(--text-primary) !important;
-}
-
-.transactions-table tbody tr:nth-child(even) {
-    background-color: var(--table-row-alt) !important;
-}
-
-.transactions-table tbody tr:nth-child(even) > * {
-    background-color: var(--table-row-alt) !important;
 }
 
 .transactions-table tbody td small {
@@ -818,28 +831,24 @@ select:-webkit-autofill:focus {
 .btn-sell:focus,
 .btn-sell:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.2);
+    box-shadow: none;
 }
 
-/* Transaction modal theme tint */
-.tx-theme-buy .modal-content {
-    background-color: var(--tx-buy-tint) !important;
+/* Transaction modal theme tint — body only, header stays neutral */
+.tx-theme-buy .modal-body {
+    background: linear-gradient(
+        160deg,
+        rgba(52, 168, 83, 0.22) 0%,
+        rgba(15, 157, 88, 0.07) 100%
+    ) !important;
 }
 
-.tx-theme-buy .modal-header,
-.tx-theme-buy .modal-body,
-.tx-theme-buy .modal-footer {
-    background-color: transparent !important;
-}
-
-.tx-theme-sell .modal-content {
-    background-color: var(--tx-sell-tint) !important;
-}
-
-.tx-theme-sell .modal-header,
-.tx-theme-sell .modal-body,
-.tx-theme-sell .modal-footer {
-    background-color: transparent !important;
+.tx-theme-sell .modal-body {
+    background: linear-gradient(
+        160deg,
+        rgba(234, 67, 53, 0.22) 0%,
+        rgba(217, 48, 37, 0.07) 100%
+    ) !important;
 }
 
 .modal-footer .btn {
