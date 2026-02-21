@@ -143,7 +143,7 @@
                                     <th class="small text-end" style="width: 120px;">Price</th>
                                     <th class="small text-end" style="width: 90px;">Qty</th>
                                     <th class="small text-end" style="width: 90px;">Fees</th>
-                                    <th class="small text-end" style="width: 140px;">Total</th>
+                                    <th class="small text-end" style="width: 140px;">Total Amount</th>
                                     <th class="small text-center" style="width: 100px;">Actions</th>
                                 </tr>
                             </thead>
@@ -162,7 +162,7 @@
                                     <td class="text-end"><small>{{ transaction.price|fmt_money(item.price_decimals) }}</small></td>
                                     <td class="text-end"><small>{{ transaction.quantity|fmt_decimal }}</small></td>
                                     <td class="text-end"><small class="text-danger">{{ transaction.fees|fmt_decimal }}</small></td>
-                                    <td class="text-end"><small class="text-primary">{{ transaction.total_cost|fmt_decimal }}</small></td>
+                                    <td class="text-end"><small class="text-primary">{{ transaction.total_cost|fmt_money }}</small></td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <button type="button" class="btn btn-outline-primary btn-sm js-edit-transaction-btn"
