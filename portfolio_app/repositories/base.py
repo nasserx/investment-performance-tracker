@@ -1,6 +1,6 @@
 """Base repository for database operations."""
 
-from typing import TypeVar, Generic, List, Optional
+from typing import TypeVar, Generic, List, Optional, Type
 from flask_sqlalchemy import SQLAlchemy
 
 T = TypeVar('T')
@@ -9,7 +9,7 @@ T = TypeVar('T')
 class BaseRepository(Generic[T]):
     """Base repository providing common database operations."""
 
-    def __init__(self, model: type[T], db: SQLAlchemy):
+    def __init__(self, model: Type[T], db: SQLAlchemy):
         """Initialize repository with model and database session.
 
         Args:
