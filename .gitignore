@@ -26,6 +26,9 @@ instance/
 *.log
 *.pid
 
+# Environment variables
+.env
+
 # OS / editor
 .DS_Store
 Thumbs.db
