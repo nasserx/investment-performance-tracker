@@ -9,8 +9,19 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Transactions</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
+            <h1 class="mb-0">Transactions</h1>
+
+            <div class="position-relative flex-grow-1" style="max-width: 420px;">
+                <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control rounded-4 ps-5" id="symbolSearch"
+                       placeholder="Search symbol..."
+                       oninput="this.value = this.value.toUpperCase(); filterBySymbol(this.value);"
+                       autocomplete="off">
+            </div>
+
             {% if funds|length > 0 %}
                 <button type="button" class="btn btn-primary" onclick="openAddAssetModal()">
                     Add Symbol
@@ -26,7 +37,7 @@
 
 <!-- Filters -->
 <div class="row mb-3 g-2">
-    <div class="col-md-4">
+    <div class="col-auto">
         <form method="GET" action="{{ url_for('transactions.transaction_list') }}">
             <div class="input-group input-group-sm">
                 <select class="form-select form-select-sm" name="category" onchange="this.form.submit()">
@@ -44,15 +55,6 @@
                 {% endif %}
             </div>
         </form>
-    </div>
-    <div class="col-md-4">
-        <div class="input-group input-group-sm">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" id="symbolSearch"
-                   placeholder="Search symbol..."
-                   oninput="this.value = this.value.toUpperCase(); filterBySymbol(this.value);"
-                   autocomplete="off">
-        </div>
     </div>
 </div>
 

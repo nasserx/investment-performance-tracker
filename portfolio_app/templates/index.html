@@ -16,7 +16,7 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface stat-card">
             <div class="card-body">
                 <p class="text-muted small mb-1">Total Funds</p>
                 <h2 class="fw-bold overview-value mb-1">{{ totals.total_investment|fmt_money }}</h2>
@@ -24,7 +24,7 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface stat-card">
             <div class="card-body">
                 <p class="text-muted small mb-1">Portfolio Value</p>
                 <h2 class="fw-bold mb-1">{{ totals.total_value|fmt_money }}</h2>
@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm h-100 page-accent-surface">
+        <div class="card border-0 shadow-sm h-100 page-accent-surface stat-card">
             <div class="card-body">
                 <p class="text-muted small mb-1">Total Realized P&amp;L</p>
                 <h2 class="mb-1 fw-bold {% if totals.total_realized_pnl >= 0 %}profit{% else %}loss{% endif %}">
