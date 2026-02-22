@@ -32,6 +32,8 @@
 - 🔄 **Transaction Tracking** — Record buy/sell operations with automatic average cost computation
 - 📊 **Realized P&L** — Automatic profit/loss calculations on every sale
 - 🔒 **Flexible Tracking** — No restrictions on buy/sell; negative balances reflected accurately
+- 👥 **Multi-User Auth** — Separate accounts with full data isolation; first user becomes admin
+- 🛡️ **Admin Panel** — Manage users, reset passwords, and toggle admin privileges
 - 🚀 **REST API** — JSON endpoints for portfolio data integration
 - 📝 **Manual Entry** — Full control over your data, no third-party price feeds
 
@@ -42,6 +44,7 @@
 | Backend | Python 3.8+ · Flask 3.0.0 |
 | Database | SQLite · Flask-SQLAlchemy |
 | Frontend | HTML5 · Bootstrap 5 · JavaScript |
+| Auth | Flask-Login · Werkzeug password hashing |
 | Forms | Flask-WTF |
 | Testing | pytest |
 
@@ -92,6 +95,16 @@ http://localhost:5000
 ```
 
 ## 📚 Usage
+
+### First Run
+1. Open `http://localhost:5000` — you will be redirected to the login page
+2. Click **Create one** to register; the first registered account automatically becomes admin
+3. Log in and start tracking your portfolio
+
+### Admin Panel
+- Access via the person icon → **Admin Panel** (admin accounts only)
+- Reset forgotten passwords and generate temporary passwords for users
+- Grant or revoke admin privileges for other accounts
 
 ### Managing Funds
 1. Navigate to the **Funds** page
@@ -207,13 +220,22 @@ investment-performance-tracker/
 ├── requirements.txt        # Python dependencies
 ├── test_app.py             # Test suite
 └── portfolio_app/
-    ├── __init__.py         # App factory
-    ├── models/             # Database models
+    ├── __init__.py         # App factory & DB migrations
+    ├── models/
+    │   ├── user.py         # User model (Flask-Login)
+    │   ├── fund.py         # Fund model
+    │   └── ...
     ├── repositories/       # Data access layer
-    ├── services/           # Business logic
+    ├── services/
+    │   ├── auth_service.py # Register, login, password management
+    │   └── ...
     ├── calculators/        # P&L and portfolio calculators
-    ├── forms/              # Flask-WTF forms and validators
+    ├── forms/
+    │   ├── auth_forms.py   # Login, register, change password forms
+    │   └── ...
     ├── routes/
+    │   ├── auth.py         # Login, register, logout, change password
+    │   ├── admin.py        # User management (admin only)
     │   ├── dashboard.py    # Overview & API endpoints
     │   ├── funds.py        # Funds management
     │   ├── transactions.py # Transactions management
@@ -224,10 +246,9 @@ investment-performance-tracker/
     │   └── js/main.js
     └── templates/
         ├── base.html
-        ├── index.html
-        ├── funds.html
-        ├── transactions.html
-        └── charts.html
+        ├── auth/           # Login, register, change password
+        ├── admin/          # User management panel
+        └── ...
 ```
 
 ## 🧪 Testing
@@ -252,7 +273,7 @@ Bug reports and feature requests use structured templates to keep things organiz
 
 - [ ] Live market price integration
 - [ ] CSV import/export
-- [ ] User authentication
+- [x] User authentication
 - [ ] Multi-currency support
 - [ ] Advanced charts and analytics
 - [ ] Docker deployment support
