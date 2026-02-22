@@ -244,21 +244,32 @@ def test_routes():
     app = create_app(TestConfig)
     client = app.test_client()
 
-    # Ensure schema exists for route tests (pytest may run this without setup_test_data()).
+    # Ensure schema exists and create a test user for authentication.
     with app.app_context():
         db.drop_all()
         db.create_all()
-    
+        from portfolio_app.models.user import User
+        user = User(username='testuser')
+        user.set_password('testpassword123')
+        db.session.add(user)
+        db.session.commit()
+
     print("\n" + "=" * 60)
     print("ROUTE TESTS")
     print("=" * 60)
-    
+
+    # Log in before testing protected routes.
+    client.post('/auth/login', data={
+        'username': 'testuser',
+        'password': 'testpassword123',
+    })
+
     # Test index route
     response = client.get('/')
     print(f"\nGET / - Status: {response.status_code}")
     assert response.status_code == 200, "Dashboard route failed"
     print("✓ Dashboard route works")
-    
+
     # Test transactions route
     response = client.get('/transactions/')
     print(f"GET /transactions/ - Status: {response.status_code}")
@@ -270,7 +281,7 @@ def test_routes():
     print(f"GET /funds/ - Status: {response.status_code}")
     assert response.status_code == 200, "Funds route failed"
     print("✓ Funds route works")
-    
+
     print("\nAll routes working correctly! ✓")
 
 if __name__ == '__main__':
