@@ -27,12 +27,12 @@ class FundService:
     # Fund CRUD
     # ------------------------------------------------------------------
 
-    def create_fund(self, category: str, amount: Decimal, notes: str = 'Initial funding', date: Optional[Any] = None) -> Fund:
+    def create_fund(self, category: str, amount: Decimal, user_id: Optional[int] = None, notes: str = 'Initial funding', date: Optional[Any] = None) -> Fund:
         """Create new fund with initial deposit event."""
         if self.fund_repo.get_by_category(category):
             raise ValueError('Fund already exists')
 
-        fund = Fund(category=category, amount=amount)
+        fund = Fund(category=category, amount=amount, user_id=user_id)
         self.fund_repo.add(fund)
         self.fund_repo.flush()  # Obtain fund.id before creating event
 

@@ -2,6 +2,7 @@
 
 import logging
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required
 from decimal import Decimal
 from sqlalchemy.exc import OperationalError
 from portfolio_app import db
@@ -111,6 +112,7 @@ def _get_transactions_page_context(category_filter=''):
 
 
 @transactions_bp.route('/')
+@login_required
 def transaction_list():
     """Transactions page."""
     category_filter = request.args.get('category', '')
@@ -125,6 +127,7 @@ def transaction_list():
 
 
 @transactions_bp.route('/add', methods=['POST'])
+@login_required
 def transaction_add():
     """Add new transaction."""
     try:
@@ -179,6 +182,7 @@ def transaction_add():
 
 
 @transactions_bp.route('/edit/<int:id>', methods=['POST'])
+@login_required
 def transaction_edit(id):
     """Edit existing transaction."""
     try:
@@ -238,6 +242,7 @@ def transaction_edit(id):
 
 
 @transactions_bp.route('/delete/<int:id>', methods=['POST'])
+@login_required
 def transaction_delete(id):
     """Delete transaction."""
     try:
@@ -264,6 +269,7 @@ def transaction_delete(id):
 
 
 @transactions_bp.route('/assets/add', methods=['POST'])
+@login_required
 def asset_add():
     """Add tracked asset."""
     try:
@@ -301,6 +307,7 @@ def asset_add():
 
 
 @transactions_bp.route('/assets/delete', methods=['POST'])
+@login_required
 def asset_delete():
     """Delete tracked asset."""
     try:

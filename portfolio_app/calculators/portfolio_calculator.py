@@ -87,9 +87,12 @@ class PortfolioCalculator:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def get_total_portfolio_value():
+    def get_total_portfolio_value(user_id=None):
         """Total portfolio value (invested + cash across all categories)."""
-        funds = Fund.query.all()
+        q = Fund.query
+        if user_id is not None:
+            q = q.filter_by(user_id=user_id)
+        funds = q.all()
         total = ZERO
         for f in funds:
             cash = PortfolioCalculator.get_cash_balance_for_fund(f.id)
@@ -129,12 +132,15 @@ class PortfolioCalculator:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def get_category_summary():
+    def get_category_summary(user_id=None):
         """Get summary for each category.
 
         Manual-entry based: funds = cash balance, only REALIZED profit shown.
         """
-        funds = Fund.query.all()
+        q = Fund.query
+        if user_id is not None:
+            q = q.filter_by(user_id=user_id)
+        funds = q.all()
 
         # First pass: compute per-category values
         categories = []
@@ -247,9 +253,12 @@ class PortfolioCalculator:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def get_portfolio_dashboard_totals():
+    def get_portfolio_dashboard_totals(user_id=None):
         """Dashboard totals: investment, cash, ROI."""
-        funds = Fund.query.all()
+        q = Fund.query
+        if user_id is not None:
+            q = q.filter_by(user_id=user_id)
+        funds = q.all()
 
         total_investment = ZERO
         total_cash = ZERO

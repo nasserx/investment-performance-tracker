@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 basedir = Path(__file__).parent
@@ -17,6 +18,11 @@ class Config:
     SESSION_COOKIE_SAMESITE = 'Lax'
     # If you serve over HTTPS, set this to True (or via env) to harden cookies.
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', '0') in ('1', 'true', 'True')
+
+    # Flask-Login
+    REMEMBER_COOKIE_DURATION = timedelta(days=30)
+    REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', '0') in ('1', 'true', 'True')
     
     # Asset categories
     ASSET_CATEGORIES = [

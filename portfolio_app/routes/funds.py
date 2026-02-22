@@ -2,6 +2,7 @@
 
 import logging
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
 from decimal import Decimal
 from portfolio_app import db
 from portfolio_app.models import FundEvent
@@ -67,6 +68,7 @@ def _get_funds_page_context():
 
 
 @funds_bp.route('/')
+@login_required
 def funds_list():
     """Funds management page."""
     ctx = _get_funds_page_context()
@@ -81,6 +83,7 @@ def funds_list():
 
 
 @funds_bp.route('/add', methods=['POST'])
+@login_required
 def funds_add():
     """Add new fund."""
     try:
@@ -105,6 +108,7 @@ def funds_add():
         fund = svc.fund_service.create_fund(
             category=data['category'],
             amount=data['amount'],
+            user_id=current_user.id,
             notes='Initial funding',
             date=data.get('date')
         )
@@ -146,6 +150,7 @@ def funds_add():
 
 
 @funds_bp.route('/delete/<int:id>', methods=['POST'])
+@login_required
 def funds_delete(id):
     """Delete fund."""
     try:
@@ -165,6 +170,7 @@ def funds_delete(id):
 
 
 @funds_bp.route('/deposit/<int:id>', methods=['POST'])
+@login_required
 def funds_deposit(id):
     """Deposit funds to category."""
     try:
@@ -218,6 +224,7 @@ def funds_deposit(id):
 
 
 @funds_bp.route('/withdraw/<int:id>', methods=['POST'])
+@login_required
 def funds_withdraw(id):
     """Withdraw funds from category."""
     try:
@@ -271,6 +278,7 @@ def funds_withdraw(id):
 
 
 @funds_bp.route('/events/edit/<int:event_id>', methods=['POST'])
+@login_required
 def funds_event_edit(event_id):
     """Edit fund event."""
     try:
@@ -315,6 +323,7 @@ def funds_event_edit(event_id):
 
 
 @funds_bp.route('/events/delete/<int:event_id>', methods=['POST'])
+@login_required
 def funds_event_delete(event_id):
     """Delete fund event."""
     try:

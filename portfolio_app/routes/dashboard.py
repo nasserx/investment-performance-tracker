@@ -2,6 +2,7 @@
 
 import logging
 from flask import Blueprint, render_template, jsonify, request, Response
+from flask_login import login_required
 from decimal import Decimal
 from portfolio_app.services import get_services
 from portfolio_app.calculators import PortfolioCalculator
@@ -24,6 +25,7 @@ def _jsonify_decimals(value):
 
 
 @dashboard_bp.route('/')
+@login_required
 def index() -> str:
     """Dashboard - Portfolio summary page.
 
@@ -43,6 +45,7 @@ def index() -> str:
 
 
 @dashboard_bp.route('/api/portfolio-summary')
+@login_required
 def api_portfolio_summary() -> Response:
     """API endpoint for portfolio summary.
 
@@ -59,6 +62,7 @@ def api_portfolio_summary() -> Response:
 
 
 @dashboard_bp.route('/api/holdings')
+@login_required
 def api_holdings() -> Response:
     """API endpoint to get held quantity for a symbol in a fund.
 

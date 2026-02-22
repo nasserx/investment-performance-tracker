@@ -13,8 +13,12 @@ def register_blueprints(app: Flask) -> None:
     from portfolio_app.routes.funds import funds_bp
     from portfolio_app.routes.transactions import transactions_bp
     from portfolio_app.routes.charts import charts_bp
+    from portfolio_app.routes.auth import auth_bp
+    from portfolio_app.routes.admin import admin_bp
 
     # Register blueprints
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(funds_bp, url_prefix='/funds')
     app.register_blueprint(transactions_bp, url_prefix='/transactions')

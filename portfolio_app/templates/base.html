@@ -62,14 +62,14 @@
                             Charts
                         </a>
                     </li>
+                    <!-- App Settings (gear) -->
                     <li class="nav-item dropdown settings-dropdown">
                         <button class="nav-link settings-btn" type="button"
                                 data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                                aria-expanded="false" aria-label="Settings">
-                            <i class="bi bi-list fs-5"></i>
+                                aria-expanded="false" aria-label="App Settings">
+                            <i class="bi bi-gear fs-5"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end settings-menu">
-                            <!-- Dark Mode -->
                             <li>
                                 <label class="dropdown-item d-flex align-items-center justify-content-between settings-item">
                                     <span class="d-flex align-items-center gap-2">
@@ -80,9 +80,62 @@
                                     </div>
                                 </label>
                             </li>
-                            <!-- Add new settings items here -->
                         </ul>
                     </li>
+
+                    <!-- User Menu (person) -->
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown settings-dropdown">
+                        <button class="nav-link settings-btn" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="true"
+                                aria-expanded="false" aria-label="User Menu">
+                            <i class="bi bi-person fs-5"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end settings-menu">
+                            <!-- User info -->
+                            <li>
+                                <span class="dropdown-item-text d-flex align-items-center gap-2 px-3 py-2"
+                                      style="font-size:0.8125rem; color:var(--text-tertiary); cursor:default; user-select:none;">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span class="fw-500" style="color:var(--text-secondary);">{{ current_user.username }}</span>
+                                    {% if current_user.is_admin %}
+                                        <span class="badge ms-1" style="background:var(--primary-lighter); color:var(--primary-color); font-size:0.65rem; padding:2px 6px;">Admin</span>
+                                    {% endif %}
+                                </span>
+                            </li>
+                            <li><hr class="dropdown-divider my-1"></li>
+
+                            {% if current_user.is_admin %}
+                            <li>
+                                <a class="dropdown-item settings-item d-flex align-items-center gap-2"
+                                   href="{{ url_for('admin.users') }}">
+                                    <i class="bi bi-shield-check"></i> Admin Panel
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li>
+                                <a class="dropdown-item settings-item d-flex align-items-center gap-2"
+                                   href="{{ url_for('auth.change_password') }}">
+                                    <i class="bi bi-key"></i> Change Password
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider my-1"></li>
+
+                            <li>
+                                <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit"
+                                            class="dropdown-item settings-item d-flex align-items-center gap-2"
+                                            style="color:var(--danger-color); background:none; border:none; width:100%; text-align:left;">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

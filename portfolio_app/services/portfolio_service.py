@@ -9,13 +9,15 @@ from portfolio_app.calculators.portfolio_calculator import PortfolioCalculator
 class PortfolioService:
     """Service for portfolio-level operations and summaries."""
 
-    def __init__(self, fund_repo: FundRepository):
+    def __init__(self, fund_repo: FundRepository, user_id=None):
         """Initialize service with repository.
 
         Args:
             fund_repo: Fund repository
+            user_id: Current user ID for data isolation
         """
         self.fund_repo = fund_repo
+        self._user_id = user_id
 
     def get_portfolio_summary(self) -> Tuple[List[Dict[str, Any]], Decimal]:
         """Get portfolio summary for all funds.
@@ -23,7 +25,7 @@ class PortfolioService:
         Returns:
             Tuple of (category summaries, total portfolio value)
         """
-        return PortfolioCalculator.get_category_summary()
+        return PortfolioCalculator.get_category_summary(user_id=self._user_id)
 
     def get_portfolio_dashboard_totals(self) -> Dict[str, Any]:
         """Get dashboard totals for the entire portfolio.
@@ -31,7 +33,7 @@ class PortfolioService:
         Returns:
             Dictionary with total investment, cash, P&L, value, and ROI metrics
         """
-        return PortfolioCalculator.get_portfolio_dashboard_totals()
+        return PortfolioCalculator.get_portfolio_dashboard_totals(user_id=self._user_id)
 
     def get_category_transactions_summary(self, fund_id: int) -> Dict[str, Any]:
         """Get aggregated transaction summary for a category.

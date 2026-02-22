@@ -1,12 +1,14 @@
 """Charts blueprint - Portfolio charts and visualizations."""
 
 from flask import Blueprint, render_template
+from flask_login import login_required
 from portfolio_app.services import get_services
 
 charts_bp = Blueprint('charts', __name__)
 
 
 @charts_bp.route('/charts')
+@login_required
 def charts() -> str:
     """Charts page - Portfolio visualizations."""
     svc = get_services()
