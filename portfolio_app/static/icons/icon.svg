@@ -1,37 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a3028"/>
-      <stop offset="100%" stop-color="#0d1a13"/>
-    </linearGradient>
-    <linearGradient id="chart" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0%" stop-color="#0f9d58"/>
-      <stop offset="100%" stop-color="#34a853"/>
-    </linearGradient>
-  </defs>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- الخلفية الدائرية -->
+  <circle cx="32" cy="32" r="30" fill="#22C55E"/>
 
-  <!-- Background rounded square -->
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- دائرة أعلى النسبة (أكبر) -->
+  <circle cx="23" cy="23" r="6" fill="white"/>
 
-  <!-- Letter P — bold white -->
-  <text x="48" y="370"
-        font-family="'Helvetica Neue', Arial Black, sans-serif"
-        font-size="310"
-        font-weight="900"
-        fill="white"
-        opacity="0.93">P</text>
+  <!-- دائرة أسفل النسبة (أكبر) -->
+  <circle cx="41" cy="41" r="6" fill="white"/>
 
-  <!-- Upward trending line chart -->
-  <polyline
-    points="230,455 288,398 340,418 398,352 458,285"
-    fill="none"
-    stroke="url(#chart)"
-    stroke-width="24"
-    stroke-linecap="round"
-    stroke-linejoin="round"/>
-
-  <!-- Glow halo at peak -->
-  <circle cx="458" cy="285" r="22" fill="#34a853" opacity="0.25"/>
-  <!-- Peak dot -->
-  <circle cx="458" cy="285" r="13" fill="#34a853"/>
+  <!-- الخط المائل أطول -->
+  <rect x="29" y="14" width="6" height="36" rx="3" fill="white" transform="rotate(45 32 32)"/>
 </svg>
