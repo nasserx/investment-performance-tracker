@@ -254,6 +254,11 @@ label,
     font-size: 1.375rem;
 }
 
+.app-logo {
+    border-radius: 7px;
+    flex-shrink: 0;
+}
+
 .app-navbar .nav-link {
     color: var(--text-secondary) !important;
     border-radius: var(--border-radius-sm);
