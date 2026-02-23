@@ -171,9 +171,9 @@
                                                         "fundId": transaction.fund_id,
                                                         "type": transaction.transaction_type,
                                                         "symbol": (transaction.symbol or ""),
-                                                        "price": (transaction.price ~ ""),
-                                                        "quantity": (transaction.quantity ~ ""),
-                                                        "fees": (transaction.fees ~ ""),
+                                                        "price": ("%.10f"|format(transaction.price)),
+                                                        "quantity": ("%.10f"|format(transaction.quantity)),
+                                                        "fees": ("%.10f"|format(transaction.fees)),
                                                         "notes": (transaction.notes or ""),
                                                         "dateShort": transaction.date_short
                                                     }|tojson|e }}'
@@ -378,8 +378,8 @@
                         <div class="col-6">
                             <div class="mb-3">
                                 <label for="fees" class="form-label">Fees (Optional)</label>
-                                <input type="text" inputmode="decimal" class="form-control {% if _tx_add_errs.get('fees') %}is-invalid{% endif %}" id="fees" name="fees"
-                                    value="0" placeholder="0.00">
+                                <input type="text" inputmode="decimal" autocomplete="off" class="form-control {% if _tx_add_errs.get('fees') %}is-invalid{% endif %}" id="fees" name="fees"
+                                    placeholder="0.00">
                                 {% if _tx_add_errs.get('fees') %}
                                 <div class="invalid-feedback">{{ _tx_add_errs.get('fees') }}</div>
                                 {% endif %}
@@ -483,7 +483,7 @@
                         <div class="col-6">
                             <div class="mb-3">
                                 <label for="edit_fees" class="form-label">Fees (Optional)</label>
-                                <input type="text" inputmode="decimal" class="form-control {% if _tx_edit_errs.get('edit_fees') %}is-invalid{% endif %}" id="edit_fees" name="edit_fees"
+                                <input type="text" inputmode="decimal" autocomplete="off" class="form-control {% if _tx_edit_errs.get('edit_fees') %}is-invalid{% endif %}" id="edit_fees" name="edit_fees"
                                     placeholder="0.00">
                                 {% if _tx_edit_errs.get('edit_fees') %}
                                 <div class="invalid-feedback">{{ _tx_edit_errs.get('edit_fees') }}</div>
@@ -766,7 +766,7 @@ function openAddTransactionModal(fundId, categoryName, symbol, forcedType) {
 
     if (priceInput) priceInput.value = '';
     if (quantityInput) quantityInput.value = '';
-    if (feesInput) feesInput.value = '0';
+    if (feesInput) feesInput.value = '';
     if (notesInput) notesInput.value = '';
     if (dateInput) dateInput.value = todayStr();
 
@@ -807,9 +807,13 @@ function editTransaction(id, fundId, type, symbol, price, quantity, fees, notes,
 
     function trimTrailingZeros(v) {
         if (v == null) return '';
-        const s = String(v).trim();
+        let s = String(v).trim();
         if (!s) return '';
-        // Only operate on plain decimals; leave anything else to the generic normalizer.
+        // Handle scientific notation (e.g. "0E-10" from Python Decimal for zero values).
+        if (/[Ee]/.test(s)) {
+            const n = parseFloat(s);
+            if (!isNaN(n)) s = n.toFixed(10);
+        }
         if (!/^[-+]?\d*(?:\.\d+)?$/.test(s)) return s;
         if (!s.includes('.')) return s;
         const out = s.replace(/(?:\.0+|(?<=\.\d*?)0+)$/, '');
