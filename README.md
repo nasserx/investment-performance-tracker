@@ -99,7 +99,7 @@ http://localhost:5000
 ### First Run
 1. Open `http://localhost:5000` — you will be redirected to the login page
 2. Click **Create one** to register; the first registered account automatically becomes admin
-3. Log in and start tracking your portfolio
+3. Log in and start tracking your investments
 
 ### Admin Panel
 - Access via the person icon → **Admin Panel** (admin accounts only)
@@ -108,7 +108,7 @@ http://localhost:5000
 
 ### Managing Funds
 1. Navigate to the **Funds** page
-2. Create a fund for each asset category (e.g., "My Stocks Fund")
+2. Create a fund for each asset category (e.g., select "Stocks" or "Crypto")
 3. Record deposits and withdrawals to track capital allocation
 
 ### Recording Transactions
@@ -123,7 +123,7 @@ http://localhost:5000
 ## 🖼️ Screenshots
 
 ### Portfolio Overview
-![Portfolio Overview](screenshots/portfolio.png)
+![Portfolio Overview](screenshots/overview.png)
 
 ### Funds Overview
 ![Funds Overview](screenshots/funds.png)
@@ -133,23 +133,6 @@ http://localhost:5000
 
 ### Charts
 ![Charts](screenshots/charts.png)
-
-<details>
-<summary>More screenshots (click to expand)</summary>
-
-### Add Symbol
-![Add Symbol](screenshots/add-symbol.png)
-
-### Add Transaction
-![Add Transaction](screenshots/add-transaction.png)
-
-### Buy Preview
-![Buy Preview](screenshots/buy-preview.png)
-
-### Sell Preview
-![Sell Preview](screenshots/sell-preview.png)
-
-</details>
 
 ## 🚀 API Reference
 
