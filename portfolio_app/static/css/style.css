@@ -1252,6 +1252,39 @@ select:-webkit-autofill:focus {
     color: var(--primary-color);
 }
 
+/* Portfolio Dominance widget */
+.dominance-widget {
+    width: 560px;
+    max-width: 100%;
+}
+
+.dominance-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.875rem;
+}
+
+.dominance-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.dominance-bar {
+    display: flex;
+    height: 7px;
+    border-radius: 20px;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.dominance-segment {
+    height: 100%;
+}
+
 .tx-preview {
     color: var(--text-secondary);
     font-size: 0.875rem;
